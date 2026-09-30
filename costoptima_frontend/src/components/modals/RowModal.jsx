@@ -31,7 +31,7 @@ export default function RowModal({ columns, initialRow, label, onClose, onSave }
           <h3>{initialRow ? 'Edit' : 'Add'} {label} Entry</h3>
           <button className="close-x" onClick={onClose}>✕</button>
         </div>
-        <div className="modal-body">
+        <div className={`modal-body${columns.length > 4 ? ' modal-body-grid' : ''}`}>
           {columns.map((c) => (
             <div className="form-field" key={c.column_name}>
               <label>{c.column_name}{c.is_required ? ' *' : ''}</label>

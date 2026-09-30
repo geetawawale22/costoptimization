@@ -251,6 +251,7 @@ export default function WorkbookTable({ typeCode, title, subtitle }) {
 
   return (
     <>
+      <div className="page-sticky-head">
       <h1 className="page-title">{title}</h1>
       {subtitle && <p className="page-sub">{subtitle}</p>}
 
@@ -282,6 +283,7 @@ export default function WorkbookTable({ typeCode, title, subtitle }) {
           ))}
         </div>
       )}
+      </div>
 
       <div className="card">
         <div className="toolbar">
@@ -335,7 +337,7 @@ export default function WorkbookTable({ typeCode, title, subtitle }) {
             {activeSection.description ? ` — ${activeSection.description}` : ''}
           </p>
         )}
-        <div className="table-scroll">
+        <div className="table-scroll sticky-table">
           <table>
             <thead>
               {columns.some((c) => c.header_group) && (

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="CostOptima — Login" description="Corporate sign-in screen with marketing panel and SSO" -->
+<helmet><link rel="stylesheet" href="./ds-base.js" as="style"><script src="./ds-base.js"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></helmet>
+<div data-screen-label="Login" style="min-height:100vh;background:#EEF1F4;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',system-ui,sans-serif">
+<div style="width:min(1040px,100%);min-height:560px;background:#fff;border:1px solid #E4E7EC;border-radius:20px;box-shadow:0 24px 60px rgba(20,30,45,.12);display:grid;grid-template-columns:44% 56%;overflow:hidden">
+<aside style="background:#182430;color:#fff;padding:44px 40px;display:flex;flex-direction:column;justify-content:center;position:relative">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:64px">
+<span style="width:36px;height:36px;border-radius:10px;background:#3E6E8E;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">co</span>
+<div><strong style="display:block;font-size:15px;font-weight:800">CostOptima</strong><span style="display:block;font-size:11.5px;color:#9AA7B7;margin-top:2px">Cost intelligence platform</span></div>
+</div>
+<span style="display:inline-flex;align-self:flex-start;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.05);color:#C8D4DF;font-size:11px;font-weight:700;padding:5px 12px;margin-bottom:22px">Secure workspace</span>
+<h1 style="font-size:30px;font-weight:800;line-height:1.2;margin:0 0 14px;max-width:340px;letter-spacing:-.01em">Manufacturing cost control, simplified.</h1>
+<p style="font-size:13.5px;color:#B9C4D0;line-height:1.65;margin:0;max-width:360px;font-weight:500">Manage master data, commodity models, approvals, and costing history from one governed operations platform.</p>
+</aside>
+<section style="display:flex;align-items:center;justify-content:center;padding:48px">
+<div style="width:100%;max-width:400px">
+<span style="display:block;color:#3E6E8E;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Welcome back</span>
+<h2 style="font-size:24px;font-weight:800;margin:0 0 8px;letter-spacing:-.01em">Sign in to CostOptima</h2>
+<p style="font-size:13.5px;color:#6B7686;margin:0 0 26px;font-weight:500">Use your corporate credentials to continue.</p>
+<div style="margin-bottom:16px"><label style="display:block;font-size:12.5px;font-weight:700;margin-bottom:7px">Corporate Email</label>
+<div style="display:flex;align-items:center;gap:10px;border:1px solid #DCE1E7;border-radius:10px;padding:0 12px;min-height:44px;background:#fff">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7686" stroke-width="1.8"><path d="M4 6.5h16v11H4z"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>
+<input value="admin@costoptima.com" style="border:0;outline:0;font:inherit;font-size:13.5px;width:100%;background:transparent">
+</div></div>
+<div style="margin-bottom:14px"><label style="display:block;font-size:12.5px;font-weight:700;margin-bottom:7px">Password</label>
+<div style="display:flex;align-items:center;gap:10px;border:1px solid #DCE1E7;border-radius:10px;padding:0 12px;min-height:44px;background:#fff">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7686" stroke-width="1.8"><path d="M7 10V8a5 5 0 0 1 10 0v2"/><path d="M6 10h12v10H6z"/></svg>
+<input type="password" value="••••••••" style="border:0;outline:0;font:inherit;font-size:13.5px;width:100%;background:transparent">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7686" stroke-width="1.8"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><path d="M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"/></svg>
+</div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin:2px 0 20px">
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1C2430"><input type="checkbox" checked style="accent-color:#3E6E8E">Keep me signed in</label>
+<a href="#" style="color:#3E6E8E;font-size:13px;font-weight:700">Forgot password?</a>
+</div>
+<button style="width:100%;min-height:46px;border-radius:10px;background:#3E6E8E;color:#fff;border:0;font-size:14px;font-weight:700;cursor:pointer">Sign In</button>
+<div style="display:flex;align-items:center;gap:10px;margin:18px 0"><span style="flex:1;height:1px;background:#E4E7EC"></span><span style="font-size:11.5px;color:#6B7686;font-weight:600">OR</span><span style="flex:1;height:1px;background:#E4E7EC"></span></div>
+<button style="width:100%;min-height:44px;border-radius:10px;background:#fff;color:#1C2430;border:1px solid #E4E7EC;font-size:13.5px;font-weight:700;cursor:pointer">Sign in with SSO</button>
+<p style="text-align:center;font-size:12px;color:#6B7686;font-weight:600;margin:18px 0 0">Protected by enterprise security</p>
+</div>
+</section>
+</div>
+</div>
+
+</x-dc>
+</body>
+</html>

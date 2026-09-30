@@ -1,0 +1,400 @@
+{
+  "_comment": [
+    "Declarative legacy-parity regression cases for the PCM engine.",
+    "",
+    "Previously the only parity check lived inside tools/verify_pcm_reference.py with the",
+    "file paths and the sheet/column comparison map written as Python literals. Adding a",
+    "parity case for another commodity meant editing that script, which is exactly the",
+    "hard-coded pattern this modernization is meant to remove - and it is the reason the",
+    "project's largest remaining gap (independent input/output parity cases for Stamping,",
+    "Soft, Forging, Sand, GDC, PDC, Thermal, PCBA and Seat) had no harness to run in.",
+    "",
+    "Add a new case by appending an object to \"cases\". No Python change is required.",
+    "Paths are resolved relative to the backend root (the parent of this data/ folder).",
+    "",
+    "\"columns\" maps an engine result/output column name -> the column header in the",
+    "expected legacy workbook. \"@variants\" means 'every variant named in the active",
+    "definition's output.variants', which is how End Item / Analysis / SBC are compared.",
+    "",
+    "A comparison is skipped when the expected value is None, matching the original",
+    "script's behaviour: the legacy workbook leaves non-applicable cells blank and those",
+    "blanks are not assertions about a value."
+  ],
+  "cases": [
+    {
+      "name": "s302_bso_cover",
+      "description": "S302 BSO COVER Sprint Input -> 2302C FENDER OUTER TRIMS expected output. Covers the Hard (Make), Buy Std, Assy and Special Process/Paint paths plus End Item, Analysis and SBC rollups.",
+      "enabled": true,
+      "definition": "data/pcm_reference_definition.json",
+      "master_layout": "data/pcm_master_import.json",
+      "input": "../S302 BSO COVER_Sprint Input_Rev 2_09.09.2026 (1).xlsx",
+      "master": "../Master_Rate_Data.xlsx",
+      "expected": "../2302C S302 FENDER OUTER TRIMS BC 10 Sep 2026 09.52.04 AM_50002264.xlsx",
+      "tolerance": 1e-08,
+      "scope": "Numerical core components, Paint aggregates/details, End Item variants, SBC and Analysis components; not exact workbook formatting or every legacy branch.",
+      "profile_sheets": {
+        "hard": {
+          "sheet": "Make",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "RM Cost/Pc": "RM Cost/Pc",
+            "Process Cost/Pc": "Process Cost/Pc",
+            "Basic Cost/Pc": "Basic Cost/Pc",
+            "Total": "Total Cost/Pc",
+            "ICC Cost": "ICC COST",
+            "REJ Cost": "REJ COST",
+            "OH Cost": "OH COST",
+            "Profit Cost": "PROFIT COST",
+            "Gross Wt": "Gross Wt",
+            "Rate Kg": "Rate Kg",
+            "Shift Rate": "Shift Rate",
+            "Pc per shift": "Pc per shift"
+          }
+        },
+        "buy_std": {
+          "sheet": "Buy Std",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "Basic Cost/Pc": "Basic Cost/Pc",
+            "Total": "Total/Pc",
+            "ICC Cost": "ICC Cost",
+            "REJ Cost": "REJ Cost",
+            "OH Cost": "O&H Cost",
+            "Profit Cost": "PROFIT Cost"
+          }
+        },
+        "assy": {
+          "sheet": "Assy",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "CT(sec)": "CT(sec)",
+            "MHR": "MHR",
+            "Basic Cost/Pc": "Basic cost/ pc",
+            "Total": "Total",
+            "CT Per Point": "CT Per Point",
+            "Handling Time": "Handling Time"
+          }
+        },
+        "special_process": {
+          "sheet": "Special Process",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "RM Cost/Pc": "Total RM Cost",
+            "Process Cost/Pc": "Process Cost",
+            "Basic Cost/Pc": "Basic cost",
+            "Total": "Total cost /PC",
+            "Total Markup": "MARKUP"
+          }
+        },
+        "pkg": {
+          "sheet": "Pkg",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "_comment": [
+            "The pkg profile executes for this fixture but was previously never compared.",
+            "Only the variant quantity columns and Qty/Veh are asserted here because they",
+            "carry identical header names in both workbooks, so the mapping is evidence,",
+            "not inference. The legacy sheet's 'Basic Cost'/'Markup' columns are NOT mapped",
+            "to the engine's 'Total' - that equivalence is unproven while both sides are",
+            "zero for this fixture. Needs Confirmation before asserting it.",
+            "",
+            "Note the engine writes this sheet as 'PKG' with the generic input-echo layout,",
+            "while legacy writes 'Pkg' with a compact layout. That presentation difference",
+            "is a real open gap; see docs/pcm/IMPLEMENTATION.md."
+          ],
+          "columns": {
+            "Qty/Veh": "Qty/Veh",
+            "MX 1": "MX 1",
+            "MX 2": "MX 2",
+            "MX 3": "MX 3",
+            "MX 5": "MX 5",
+            "MX 5[O]": "MX 5[O]",
+            "AX 5": "AX 5",
+            "AX 7": "AX 7",
+            "AX7L": "AX7L",
+            "ZENITH": "ZENITH"
+          }
+        },
+        "frt": {
+          "sheet": "Frt",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "_comment": "Same basis and same caveats as the pkg entry above.",
+          "columns": {
+            "Qty/Veh": "Qty/Veh",
+            "MX 1": "MX 1",
+            "MX 2": "MX 2",
+            "MX 3": "MX 3",
+            "MX 5": "MX 5",
+            "MX 5[O]": "MX 5[O]",
+            "AX 5": "AX 5",
+            "AX 7": "AX 7",
+            "AX7L": "AX7L",
+            "ZENITH": "ZENITH"
+          }
+        }
+      },
+      "profile_details": {
+        "special_process": {
+          "expected_sheet": "Paint",
+          "match_expected_column": "Customer No",
+          "require_non_null_column": "Sr",
+          "columns": {
+            "Paint RM Cost": "Paint RM Cost",
+            "Paint Process Cost": "Paint Process Cost",
+            "Paint Basic Cost": "Basic Cost",
+            "Paint Markup": "Paint Markup",
+            "Paint PnF": "Pnf"
+          }
+        }
+      },
+      "rollups": [
+        {
+          "sheet": "End Item",
+          "identity": "End Item",
+          "columns": "@variants",
+          "missing_actual_as_zero": true
+        },
+        {
+          "sheet": "Analysis",
+          "identity": "Cost Driver",
+          "columns": "@variants",
+          "missing_actual_as_zero": true
+        },
+        {
+          "sheet": "SBC",
+          "identity": "End Item",
+          "columns": "@variants",
+          "expected_header_row": 1,
+          "expected_first_data_row": 2,
+          "expected_require_non_null_index": 0,
+          "_comment": "The legacy SBC sheet carries a display-label row (MX 1 / MX 2 ...) above its true header row."
+        }
+      ],
+      "detail_sheets": [
+        {
+          "sheet": "Paint",
+          "match_on": [
+            "Customer No",
+            "Material Code"
+          ],
+          "require_non_null": "Material Code",
+          "columns": {
+            "Rate / Litre": "Rate / Litre",
+            "RM cost / Pc": "RM cost / Pc"
+          }
+        }
+      ]
+    },
+    {
+      "name": "m210_soft_nvh_insulations",
+      "description": "M210 FBPTKO180826 input -> 2302D M210 NVH INSULATIONS TKO expected output. Covers Soft/Trim Soft plus End Item, Analysis, SBC, Pkg and Frt rollups.",
+      "enabled": true,
+      "definition": "data/pcm_reference_definition.json",
+      "master_layout": "data/pcm_master_import.json",
+      "input": "../G MOHAN_18_08_2026_12_35_00/G MOHAN_18_08_2026_12_35_00/M210 FBPTKO180826.xlsx",
+      "master": "../G MOHAN_18_08_2026_12_35_00/G MOHAN_18_08_2026_12_35_00/Master Rate Data.xlsx",
+      "expected": "../2302D M210 NVH INSULATIONS TKO 22 Sep 2026 01.04.03 PM_50002264.xlsx",
+      "tolerance": 1e-08,
+      "scope": "Soft calculated cost rows from the legacy ST_Ukay Metal ST output sheet plus workbook rollups.",
+      "profile_sheets": {
+        "soft": {
+          "sheet": "ST_Ukay Metal ST",
+          "expected_header_row": 1,
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "RM Cost/Pc": "RM Cost / Pc",
+            "Process Cost/Pc": "Process Cost",
+            "Basic Cost/Pc": "Basic Cost/Pc",
+            "ICC Cost": "ICC",
+            "REJ Cost": "Rej",
+            "OH Cost": "OH",
+            "Profit Cost": "Profit",
+            "Total Markup": "Total Markup",
+            "Total": "Total",
+            "Gross Consumption": "Considered con for RM cost",
+            "Cal RM cons (net consumption base)": "Cal RM cons",
+            "Blank Length (blank consumption base)": "Blank Length",
+            "Blank Width (blank consumption base)": "Blank Width"
+          }
+        },
+        "pkg": {
+          "sheet": "Pkg",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "Qty/Veh": "Qty/Veh",
+            "Pack 1": "Pack 1",
+            "Pack 2": "Pack 2",
+            "Pack 3": "Pack 3",
+            "Pack 4": "Pack 4"
+          }
+        },
+        "frt": {
+          "sheet": "Frt",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "Qty/Veh": "Qty/Veh",
+            "Pack 1": "Pack 1",
+            "Pack 2": "Pack 2",
+            "Pack 3": "Pack 3",
+            "Pack 4": "Pack 4"
+          }
+        }
+      },
+      "rollups": [
+        {
+          "sheet": "End Item",
+          "identity": "End Item",
+          "columns": "@variants",
+          "missing_actual_as_zero": true
+        },
+        {
+          "sheet": "Analysis",
+          "identity": "Cost Driver",
+          "columns": "@variants",
+          "missing_actual_as_zero": true
+        },
+        {
+          "sheet": "SBC",
+          "identity": "End Item",
+          "columns": "@variants",
+          "expected_header_row": 1,
+          "expected_first_data_row": 2,
+          "expected_require_non_null_index": 0
+        }
+      ]
+    },
+    {
+      "name": "thermostat_cover_gdc",
+      "description": "RPA GDC Thermostat Cover input -> 604 Yuvn_t Thermostat Cover SBC expected output. Covers GDC plus End Item, Analysis, SBC, Pkg and Frt rollups.",
+      "enabled": true,
+      "definition": "data/pcm_reference_definition.json",
+      "master_layout": "data/pcm_master_import.json",
+      "input": "../SALEKAR SANTOSH_22_09_2026_07_40_10/SALEKAR SANTOSH_22_09_2026_07_40_10/RPA_GDC Input Thermostat Cover_Nxt 3 Axis_145Y01_Jan_25 RM_Core Sample_May'26.xlsx",
+      "master": "../SALEKAR SANTOSH_22_09_2026_07_40_10/SALEKAR SANTOSH_22_09_2026_07_40_10/Master Rate Data.xlsx",
+      "expected": "../604 Yuvn_t Thermostat Cover SBC 22 Sep 2026 01.10.47 PM_50002264.xlsx",
+      "tolerance": 1e-08,
+      "scope": "GDC calculated cost rows from the legacy GDC_Output_Pooja output sheet plus workbook rollups.",
+      "profile_sheets": {
+        "gdc": {
+          "sheet": "GDC_Output_Pooja",
+          "expected_header_row": 1,
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "RM Cost/Pc": "RM Cost/Pc",
+            "Process Cost/Pc": "Process Cost",
+            "Basic Cost/Pc": "Basic Cost/Pc",
+            "ICC Cost": "ICC",
+            "REJ Cost": "Rej",
+            "OH Cost": "OH",
+            "Profit Cost": "Profit",
+            "Total Markup": "Total Markup",
+            "Total": "Total",
+            "Gross Wt": "Gross Wt",
+            "Scrap Cost": "Scrap Cost"
+          }
+        },
+        "pkg": {
+          "sheet": "Pkg",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "Qty/Veh": "Qty/Veh",
+            "W1": "W1",
+            "W2": "W2",
+            "W3": "W3"
+          }
+        },
+        "frt": {
+          "sheet": "Frt",
+          "match_on": [
+            "Customer No",
+            "End Item"
+          ],
+          "columns": {
+            "Qty/Veh": "Qty/Veh",
+            "W1": "W1",
+            "W2": "W2",
+            "W3": "W3"
+          }
+        }
+      },
+      "rollups": [
+        {
+          "sheet": "End Item",
+          "identity": "End Item",
+          "columns": "@variants",
+          "missing_actual_as_zero": true
+        },
+        {
+          "sheet": "Analysis",
+          "identity": "Cost Driver",
+          "columns": "@variants",
+          "missing_actual_as_zero": true
+        },
+        {
+          "sheet": "SBC",
+          "identity": "End Item",
+          "columns": "@variants",
+          "expected_header_row": 1,
+          "expected_first_data_row": 2,
+          "expected_require_non_null_index": 0
+        }
+      ]
+    }
+  ],
+  "_pending_cases": {
+    "_comment": [
+      "Commodity profiles that execute in the engine but have NO independent legacy",
+      "input/expected-output pair supplied, so their parity is UNVERIFIED. Each needs a",
+      "matching legacy input workbook and the legacy output it produced; once supplied,",
+      "add a case above. No Python change is required.",
+      "",
+      "This list is the concrete answer to 'what is still needed to finish parity' - it is",
+      "blocked on fixtures, not on code."
+    ],
+    "profiles_without_parity_fixture": [
+      "stamping",
+      "soft",
+      "forging",
+      "sand",
+      "pdc",
+      "thermal",
+      "thermal_make",
+      "pcba",
+      "seat",
+      "buy_non_std",
+      "consign"
+    ]
+  }
+}

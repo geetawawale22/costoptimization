@@ -1,0 +1,1698 @@
+{
+  "schema_version": 1,
+  "revision": "pcm-documented-v1",
+  "evidence": [
+    "PCM_Reverse_Engineering_Baseline.md",
+    "PCM_Reverse_Engineering_Baseline.docx",
+    "PCM_Project Document (1).docx",
+    "PCM_5/PCM_5/Sheet_Metal_Forging_with summary_chk_Chnages.py"
+  ],
+  "sources": {
+    "sheet_metal": [
+      "sheet_metal_self",
+      "sheet_metal_master_user",
+      "sheet_metal_pce",
+      "pcm_master"
+    ],
+    "ee": [
+      "ee_self",
+      "ee_master_user",
+      "ee_pce",
+      "pcm_master"
+    ],
+    "special_process": [
+      "special_process_self",
+      "special_process_master_user",
+      "special_process_pce",
+      "pcm_master"
+    ],
+    "seat_mechanism": [
+      "seat_mechanism_self",
+      "seat_mechanism_master_user",
+      "seat_mechanism_pce",
+      "pcm_master"
+    ],
+    "shared": [
+      "pcm_master"
+    ],
+    "soft_trim": [
+      "soft_trim_self",
+      "soft_trim_master_user",
+      "soft_trim_pce",
+      "pcm_master"
+    ],
+    "dac_hvac_other": [
+      "dac_hvac_other_self",
+      "dac_hvac_other_master_user",
+      "dac_hvac_other_pce",
+      "pcm_master"
+    ],
+    "trim": [
+      "shift_factor_rate",
+      "trim_self",
+      "trim_master_user",
+      "trim_pce",
+      "pcm_master"
+    ],
+    "gdc_pdc": [
+      "gdc_pdc_self",
+      "gdc_pdc_master_user",
+      "gdc_pdc_pce",
+      "pcm_master"
+    ],
+    "forging": [
+      "forging_self",
+      "forging_master_user",
+      "forging_pce",
+      "pcm_master"
+    ]
+  },
+  "table_aliases": {
+    "Std BOP": [
+      "Std BOP",
+      "BOP"
+    ],
+    "Non Std BOP": [
+      "Non Std BOP",
+      "BuyNonStd",
+      "Buy NonStd"
+    ],
+    "Casting Recipe Master": [
+      "Casting Recipe Master",
+      "Casting Recipie Master"
+    ]
+  },
+  "process_units": {
+    "per_hour": 60,
+    "per_minute": 1,
+    "per_piece": 1,
+    "per_kg": 1
+  },
+  "profiles": {
+    "forging": {
+      "scope": "forging",
+      "sheet": "Forging",
+      "parameters": {
+        "scrap_recovery_factor": 0.8
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "input_wt",
+          "expression": "n(v(\"Input Wt\"))"
+        },
+        {
+          "name": "part_wt",
+          "expression": "n(v(\"Part Wt\"))"
+        },
+        {
+          "name": "yield_ratio",
+          "expression": "part_wt / input_wt"
+        },
+        {
+          "name": "scrap_wt",
+          "expression": "(input_wt - part_wt) * p(\"scrap_recovery_factor\")"
+        },
+        {
+          "name": "scrap_rate",
+          "expression": "n(lookup(\"Material Master\", \"Scrap Rate\", {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "scrap_recovery",
+          "expression": "scrap_wt * scrap_rate"
+        },
+        {
+          "name": "heat",
+          "expression": "(n(v(\"Heat Treatment Cost\")) if v(\"Heat Treatment Cost\", None) != None else operations(\"heat\")) if text(v(\"Type\")) == \"make\" else 0"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * input_wt + heat - scrap_recovery"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Process Cost\")) if v(\"Process Cost\", None) != None else operations(\"conversion\")"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Yield (%)": "yield_ratio",
+        "Scrap Wt": "scrap_wt",
+        "Scrap Recovery": "scrap_recovery"
+      }
+    },
+    "hard": {
+      "scope": "trim",
+      "sheet": "Make",
+      "parameters": {
+        "hrs_factor": 1.03,
+        "shift_seconds": 28800,
+        "deflashing_threshold": 400
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "gross_wt",
+          "expression": "n(v(\"Gross Wt\")) if v(\"Gross Wt\", None) != None else n(v(\"Part Wt\")) * (p(\"hrs_factor\") if text(v(\"HRS Y or N\")) == \"y\" else n(band(\"Norms Gross Wt\", n(v(\"Part Wt\")), \"Factor\", {})))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * gross_wt"
+        },
+        {
+          "name": "efficiency",
+          "expression": "n(lookup(\"Norms Make\", \"EFFICIENCY\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "shift_factor",
+          "expression": "n(lookup(\"Norms Shift Factor\", \"Shift Factor\", {\"Process\": lookup(\"Material Master\", \"Applicable Process\", {\"Material Code\": v(\"Material Code\")}), \"Sector & Location\": v(\"Sector & Location\")}))"
+        },
+        {
+          "name": "shift_rate",
+          "expression": "n(v(\"m/c Tonnage\")) * shift_factor"
+        },
+        {
+          "name": "pc_per_shift",
+          "expression": "p(\"shift_seconds\") / n(v(\"Cycle Time\")) * n(v(\"Cavity\")) * efficiency"
+        },
+        {
+          "name": "molding",
+          "expression": "shift_rate / pc_per_shift"
+        },
+        {
+          "name": "deflashing",
+          "expression": "n(band(\"Norms Deflashing\", n(v(\"m/c Tonnage\")), \"Cost\", {})) if n(v(\"m/c Tonnage\")) > p(\"deflashing_threshold\") else 0"
+        },
+        {
+          "name": "process_cost",
+          "expression": "molding + deflashing"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Gross Wt": "gross_wt",
+        "Shift Factor": "shift_factor",
+        "Shift Rate": "shift_rate",
+        "Pc per shift": "pc_per_shift",
+        "Molding Cost": "molding",
+        "Deflashing Cost": "deflashing"
+      }
+    },
+    "soft": {
+      "scope": "soft_trim",
+      "sheet": "Soft",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "gross_consumption",
+          "expression": "n(v(\"Actual Gross Consumption\")) if v(\"Actual Gross Consumption\", None) != None else n(rule(\"Gross Consumption base\", \"Gross Consumption\"))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * gross_consumption"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Process Cost\")) if v(\"Process Cost\", None) != None else operations(\"conversion\")"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        },
+        {
+          "name": "net_rm_cons",
+          "expression": "n(rule(\"Net Consumption base\", \"Cal RM cons\"))"
+        },
+        {
+          "name": "blank_length",
+          "expression": "n(rule(\"Blank Consumption base\", \"Blank Length\"))"
+        },
+        {
+          "name": "blank_width",
+          "expression": "n(rule(\"Blank Consumption base\", \"Blank Width\"))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Gross Consumption": "gross_consumption",
+        "Cal RM cons (net consumption base)": "net_rm_cons",
+        "Blank Length (blank consumption base)": "blank_length",
+        "Blank Width (blank consumption base)": "blank_width"
+      }
+    },
+    "stamping": {
+      "scope": "sheet_metal",
+      "sheet": "Stamping",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "gross_consumption",
+          "expression": "n(v(\"Actual Gross Consumption\")) if v(\"Actual Gross Consumption\", None) != None else n(rule(\"Gross Consumption base\", \"Gross Consumption\"))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * gross_consumption"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Process Cost\")) if v(\"Process Cost\", None) != None else operations(\"conversion\")"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Gross Consumption": "gross_consumption"
+      }
+    },
+    "sand": {
+      "scope": "forging",
+      "sheet": "Sand Casting",
+      "parameters": {
+        "scrap_divisor": 4,
+        "scrap_recovery_factor": 0.85
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(rule(\"Casting Recipe Master\", \"Rate/UOM\")) if text(v(\"Type\")) == \"make\" else n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "gross_wt",
+          "expression": "n(v(\"Gross Wt\"))"
+        },
+        {
+          "name": "scrap_wt",
+          "expression": "gross_wt - n(v(\"Part Wt\"))"
+        },
+        {
+          "name": "scrap_recovery",
+          "expression": "scrap_wt * rate / p(\"scrap_divisor\") * p(\"scrap_recovery_factor\")"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * gross_wt"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Process Cost\")) if v(\"Process Cost\", None) != None else operations(\"conversion\")"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        },
+        {
+          "name": "total",
+          "expression": "total - scrap_recovery"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Machining Scrap Recovery": "scrap_recovery"
+      }
+    },
+    "gdc": {
+      "scope": "gdc_pdc",
+      "sheet": "GDC",
+      "parameters": {
+        "burning_loss": 0.07,
+        "scrap_rate_factor": 0.7,
+        "scrap_recovery_factor": 0.85,
+        "shot_yield": 0.65
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "casting_wt",
+          "expression": "n(v(\"Casting Wt\"))"
+        },
+        {
+          "name": "burning_loss",
+          "expression": "casting_wt * p(\"burning_loss\")"
+        },
+        {
+          "name": "gross_wt",
+          "expression": "casting_wt + burning_loss"
+        },
+        {
+          "name": "scrap_wt",
+          "expression": "casting_wt - n(v(\"Part Wt\"))"
+        },
+        {
+          "name": "scrap_cost",
+          "expression": "scrap_wt * rate * p(\"scrap_rate_factor\") * p(\"scrap_recovery_factor\")"
+        },
+        {
+          "name": "shot_wt",
+          "expression": "casting_wt / p(\"shot_yield\")"
+        },
+        {
+          "name": "core_cost",
+          "expression": "n(v(\"Core Weight per Part\")) * n(lookup(\"Process Master\", \"Rate\", {\"Process\": \"CORE\", \"Sector & Location\": v(\"Sector & Location\")}))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * gross_wt - scrap_cost + core_cost"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Process Cost\")) if v(\"Process Cost\", None) != None else operations(\"conversion\")"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Burning Loss": "burning_loss",
+        "Gross Wt": "gross_wt",
+        "Scrap Cost": "scrap_cost"
+      }
+    },
+    "pdc": {
+      "scope": "gdc_pdc",
+      "sheet": "PDC",
+      "parameters": {
+        "burning_loss": 0.07,
+        "scrap_rate_factor": 0.7,
+        "scrap_recovery_factor": 0.85,
+        "shot_yield": 0.65
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "casting_wt",
+          "expression": "n(v(\"Casting Wt\"))"
+        },
+        {
+          "name": "burning_loss",
+          "expression": "casting_wt * p(\"burning_loss\")"
+        },
+        {
+          "name": "gross_wt",
+          "expression": "casting_wt + burning_loss"
+        },
+        {
+          "name": "scrap_wt",
+          "expression": "casting_wt - n(v(\"Part Wt\"))"
+        },
+        {
+          "name": "scrap_cost",
+          "expression": "scrap_wt * rate * p(\"scrap_rate_factor\") * p(\"scrap_recovery_factor\")"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * gross_wt - scrap_cost"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Process Cost\")) if v(\"Process Cost\", None) != None else operations(\"conversion\")"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Burning Loss": "burning_loss",
+        "Gross Wt": "gross_wt",
+        "Scrap Cost": "scrap_cost"
+      }
+    },
+    "thermal": {
+      "scope": "dac_hvac_other",
+      "sheet": "Thermal",
+      "parameters": {
+        "gross_factor": 1.2
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "gross_wt",
+          "expression": "n(v(\"Part Wt\")) * p(\"gross_factor\")"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * gross_wt"
+        },
+        {
+          "name": "process_cost",
+          "expression": "rm_cost * n(lookup(\"Process Master\", \"Rate\", {\"Process\": \"Core Coversion Cost\", \"Sector & Location\": v(\"Sector & Location\")}))"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Gross Wt": "gross_wt"
+      }
+    },
+    "thermal_make": {
+      "scope": "dac_hvac_other",
+      "sheet": "Thermal Make",
+      "parameters": {
+        "length_divisor": 100,
+        "flow_dimensions": {
+          "horizontal": "L",
+          "vertical": "W"
+        }
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "rate",
+          "expression": "n(lookup(\"Material Master\", v(\"RM Base\", \"Rate/UOM\"), {\"Material Code\": v(\"Material Code\")}))"
+        },
+        {
+          "name": "tube_pitch",
+          "expression": "n(v(p(\"flow_dimensions\")[text(v(\"Flow type\"))])) / n(v(\"Qty/Veh\"))"
+        },
+        {
+          "name": "fin_height",
+          "expression": "tube_pitch - n(v(\"Tube Height (Post Forming)\"))"
+        },
+        {
+          "name": "fin_qty",
+          "expression": "n(v(\"Input Blank Length\")) / p(\"length_divisor\") * n(v(\"FPDM\"))"
+        },
+        {
+          "name": "fin_length",
+          "expression": "fin_height * fin_qty"
+        },
+        {
+          "name": "consumption",
+          "expression": "n(rule(\"Net Consumption base\", \"Net RM Consumption\"))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "rate * consumption"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Process Cost\")) if v(\"Process Cost\", None) != None else operations(\"conversion\")"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Tube Pitch": "tube_pitch",
+        "Fin Height": "fin_height",
+        "Fin Qty": "fin_qty",
+        "Fin Length": "fin_length"
+      }
+    },
+    "pcba": {
+      "scope": "ee",
+      "sheet": "PCBA",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "fob",
+          "expression": "n(lookup(\"eBom\", \"FOB\", {\"Customer No\": v(\"Customer No\"), \"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "exchange",
+          "expression": "n(lookup(\"eBom\", \"EXCHANGE\", {\"Customer No\": v(\"Customer No\"), \"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "landing",
+          "expression": "n(lookup(\"eBom\", \"Landing Factor\", {\"Customer No\": v(\"Customer No\"), \"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "fob * exchange * landing"
+        },
+        {
+          "name": "process_cost",
+          "expression": "n(v(\"Solder Points\")) * n(lookup(\"Process Master\", \"Rate\", {\"Process\": \"SOLDERING\", \"Sector & Location\": v(\"Sector & Location\")}))"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Make\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Make\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Make\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Make\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total"
+      }
+    },
+    "buy_std": {
+      "scope": "shared",
+      "sheet": "Buy Std",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "purchase",
+          "expression": "n(lookup(\"Std BOP\", \"Cost/Pc\", {\"Customer No\": v(\"Customer No\")}))"
+        },
+        {
+          "name": "royalty",
+          "expression": "purchase * n(lookup(\"Norms Buy Std\", \"Royalty\", {\"Supplier\": v(\"End Item Supplier\", v(\"Supplier\"))}))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "purchase + royalty"
+        },
+        {
+          "name": "process_cost",
+          "expression": "0"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Buy Std\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Buy Std\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Buy Std\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Buy Std\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "Royalty": "royalty"
+      },
+      "scope_by_commodity": {
+        "hard": "trim",
+        "trim": "trim",
+        "forging": "forging",
+        "stamping": "sheet_metal",
+        "sheet metal": "sheet_metal",
+        "pcba": "ee",
+        "thermal": "dac_hvac_other",
+        "gdc": "gdc_pdc",
+        "pdc": "gdc_pdc"
+      }
+    },
+    "buy_non_std": {
+      "scope": "shared",
+      "sheet": "Buy Non Std",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "total",
+          "expression": "n(lookup(\"Non Std BOP\", \"Cost/Pc\", {\"Customer No\": v(\"Customer No\")}))"
+        }
+      ],
+      "outputs": {
+        "Total": "total"
+      },
+      "scope_by_commodity": {
+        "hard": "trim",
+        "trim": "trim",
+        "forging": "forging",
+        "stamping": "sheet_metal",
+        "sheet metal": "sheet_metal",
+        "pcba": "ee",
+        "thermal": "dac_hvac_other",
+        "gdc": "gdc_pdc",
+        "pdc": "gdc_pdc"
+      }
+    },
+    "consign": {
+      "scope": "shared",
+      "sheet": "Consign",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "handling",
+          "expression": "n(band(\"Norms Consign\", n(v(\"Part Wt\")), \"Handling\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "total",
+          "expression": "n(v(\"Actual Cost/Pc\")) + handling"
+        }
+      ],
+      "outputs": {
+        "Total": "total",
+        "Handling": "handling"
+      },
+      "scope_by_commodity": {
+        "hard": "trim",
+        "trim": "trim",
+        "forging": "forging",
+        "stamping": "sheet_metal",
+        "sheet metal": "sheet_metal",
+        "pcba": "ee",
+        "thermal": "dac_hvac_other",
+        "gdc": "gdc_pdc",
+        "pdc": "gdc_pdc"
+      }
+    },
+    "assy": {
+      "scope": "trim",
+      "sheet": "Assy",
+      "parameters": {
+        "seconds_per_hour": 3600
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "ct",
+          "expression": "n(v(\"CT(sec)\")) if v(\"CT(sec)\", None) != None else n(lookup(\"Assy\", \"CT per Point\", {\"Customer No\": v(\"Customer No\"), \"Category\": v(\"Category\")})) * n(v(\"No of Points\")) + n(lookup(\"Assy\", \"Handling Time\", {\"Customer No\": v(\"Customer No\"), \"Category\": v(\"Category\")}))"
+        },
+        {
+          "name": "mhr",
+          "expression": "n(lookup(\"Assy\", \"MHR\", {\"Category\": v(\"Category\"), \"Process\": v(\"Operation Process\")}))"
+        },
+        {
+          "name": "rm_cost",
+          "expression": "0"
+        },
+        {
+          "name": "process_cost",
+          "expression": "ct / p(\"seconds_per_hour\") * mhr"
+        },
+        {
+          "name": "basic_cost",
+          "expression": "rm_cost + process_cost"
+        },
+        {
+          "name": "icc_rate",
+          "expression": "n(lookup(\"Norms Assy\", \"ICC\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "icc_cost",
+          "expression": "icc_rate * n(rule(\"Norms Make Applicability\", \"ICC Base\"))"
+        },
+        {
+          "name": "rej_rate",
+          "expression": "n(lookup(\"Norms Assy\", \"REJ\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "rej_cost",
+          "expression": "rej_rate * n(rule(\"Norms Make Applicability\", \"REJ Base\"))"
+        },
+        {
+          "name": "oh_rate",
+          "expression": "n(lookup(\"Norms Assy\", \"OH\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "oh_cost",
+          "expression": "oh_rate * n(rule(\"Norms Make Applicability\", \"OH Base\"))"
+        },
+        {
+          "name": "profit_rate",
+          "expression": "n(lookup(\"Norms Assy\", \"PROFIT\", {\"Supplier\": v(\"Supplier\")}))"
+        },
+        {
+          "name": "profit_cost",
+          "expression": "profit_rate * n(rule(\"Norms Make Applicability\", \"PROFIT Base\"))"
+        },
+        {
+          "name": "markup",
+          "expression": "icc_cost + rej_cost + oh_cost + profit_cost"
+        },
+        {
+          "name": "total",
+          "expression": "basic_cost + markup + n(v(\"Tool Cost\", 0)) + n(v(\"Packing\", 0)) + n(v(\"Freight\", 0))"
+        }
+      ],
+      "outputs": {
+        "RM Cost/Pc": "rm_cost",
+        "Process Cost/Pc": "process_cost",
+        "Basic Cost/Pc": "basic_cost",
+        "ICC Cost": "icc_cost",
+        "REJ Cost": "rej_cost",
+        "OH Cost": "oh_cost",
+        "Profit Cost": "profit_cost",
+        "Total Markup": "markup",
+        "Total": "total",
+        "CT(sec)": "ct",
+        "MHR": "mhr"
+      },
+      "scope_by_commodity": {
+        "hard": "trim",
+        "trim": "trim",
+        "forging": "forging",
+        "stamping": "sheet_metal",
+        "sheet metal": "sheet_metal",
+        "pcba": "ee",
+        "thermal": "dac_hvac_other",
+        "gdc": "gdc_pdc",
+        "pdc": "gdc_pdc"
+      }
+    },
+    "pkg": {
+      "scope": "shared",
+      "sheet": "PKG",
+      "parameters": {
+        "basic_cost": 0,
+        "rate": 0.03
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "total",
+          "expression": "n(v(\"Basic Cost\", p(\"basic_cost\"))) * p(\"rate\")"
+        }
+      ],
+      "outputs": {
+        "Total": "total"
+      }
+    },
+    "frt": {
+      "scope": "shared",
+      "sheet": "FRT",
+      "parameters": {
+        "basic_cost": 0,
+        "rate": 0.03
+      },
+      "operations": {},
+      "steps": [
+        {
+          "name": "total",
+          "expression": "n(v(\"Basic Cost\", p(\"basic_cost\"))) * p(\"rate\")"
+        }
+      ],
+      "outputs": {
+        "Total": "total"
+      }
+    },
+    "end_item": {
+      "scope": "shared",
+      "sheet": "End Item Input",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "total",
+          "expression": "0"
+        }
+      ],
+      "outputs": {
+        "Total": "total"
+      }
+    },
+    "special_process": {
+      "scope": "special_process",
+      "sheet": "Special Process",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "total",
+          "expression": "n(rule(\"Special Process Rules\", \"Total\"))"
+        }
+      ],
+      "outputs": {
+        "Total": "total"
+      }
+    },
+    "seat": {
+      "scope": "seat_mechanism",
+      "sheet": "Seat",
+      "parameters": {},
+      "operations": {},
+      "steps": [
+        {
+          "name": "total",
+          "expression": "n(rule(\"Seat Output Matrix\", \"Total\"))"
+        }
+      ],
+      "outputs": {
+        "Total": "total"
+      }
+    }
+  },
+  "dispatch": [
+    {
+      "match": {
+        "Type": [
+          "END ITEM"
+        ]
+      },
+      "profile": "end_item"
+    },
+    {
+      "match": {
+        "Type": [
+          "BUY STD"
+        ]
+      },
+      "profile": "buy_std"
+    },
+    {
+      "match": {
+        "Type": [
+          "CONSIGN"
+        ]
+      },
+      "profile": "consign"
+    },
+    {
+      "match": {
+        "Type": [
+          "ASSY"
+        ]
+      },
+      "profile": "assy"
+    },
+    {
+      "match": {
+        "Type": [
+          "PKG"
+        ]
+      },
+      "profile": "pkg"
+    },
+    {
+      "match": {
+        "Type": [
+          "FRT"
+        ]
+      },
+      "profile": "frt"
+    },
+    {
+      "match": {
+        "Type": [
+          "SPECIAL PROCESS"
+        ]
+      },
+      "profile": "special_process"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "THERMAL",
+          "HVAC"
+        ],
+        "Type": [
+          "MAKE"
+        ]
+      },
+      "profile": "thermal_make"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "HARD",
+          "TRIM"
+        ]
+      },
+      "profile": "hard"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "FORGING"
+        ]
+      },
+      "profile": "forging"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "SOFT",
+          "SOFT TRIM"
+        ]
+      },
+      "profile": "soft"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "STAMPING",
+          "SHEET METAL"
+        ]
+      },
+      "profile": "stamping"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "SAND CASTING"
+        ]
+      },
+      "profile": "sand"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "GDC"
+        ]
+      },
+      "profile": "gdc"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "PDC"
+        ]
+      },
+      "profile": "pdc"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "THERMAL",
+          "HVAC"
+        ]
+      },
+      "profile": "thermal"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "PCBA"
+        ]
+      },
+      "profile": "pcba"
+    },
+    {
+      "match": {
+        "Commodity": [
+          "SEAT",
+          "SEAT MECHANISM"
+        ]
+      },
+      "profile": "seat"
+    },
+    {
+      "match": {
+        "Type": [
+          "BUY NON STD"
+        ],
+        "Commodity": [
+          "",
+          "GENERIC"
+        ]
+      },
+      "profile": "buy_non_std"
+    }
+  ],
+  "input": {
+    "bom_sheet": "BOM",
+    "enrichment": [
+      {
+        "sheet": "Hard",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "HARD",
+            "TRIM"
+          ]
+        }
+      },
+      {
+        "sheet": "Soft",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "SOFT"
+          ]
+        }
+      },
+      {
+        "sheet": "Stamping",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "STAMPING",
+            "SHEET METAL"
+          ]
+        }
+      },
+      {
+        "sheet": "Forging",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "FORGING"
+          ]
+        }
+      },
+      {
+        "sheet": "Sand Casting",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "SAND CASTING"
+          ]
+        }
+      },
+      {
+        "sheet": "GDC",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "GDC"
+          ]
+        }
+      },
+      {
+        "sheet": "PDC",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "PDC"
+          ]
+        }
+      },
+      {
+        "sheet": "Thermal",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "THERMAL"
+          ]
+        }
+      },
+      {
+        "sheet": "PCBA",
+        "keys": [
+          "Customer No",
+          "End Item",
+          "Type"
+        ],
+        "match": {
+          "Commodity": [
+            "PCBA"
+          ]
+        }
+      }
+    ]
+  },
+  "output": {
+    "master_sheet": "Master_Output",
+    "rollup_sheet": "End Item",
+    "group_by": [
+      "End Item",
+      "Supplier"
+    ],
+    "quantity_field": "Qty/Veh",
+    "variants": [],
+    "analysis_components": [
+      "RM Cost/Pc",
+      "Process Cost/Pc",
+      "Total Markup",
+      "Total"
+    ]
+  }
+}

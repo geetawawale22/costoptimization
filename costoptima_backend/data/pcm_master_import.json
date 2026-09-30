@@ -1,0 +1,754 @@
+{
+  "workbook": "pcm_published",
+  "tables": [
+    {
+      "table": "Material Master",
+      "sheet": "Material Master",
+      "columns": null,
+      "data_start": 3,
+      "required_keys": [
+        "Material Code"
+      ],
+      "header_row": 2,
+      "group_row": 1,
+      "merge_columns": [
+        "Rate/UOM",
+        "Scrap Rate"
+      ]
+    },
+    {
+      "table": "Process Master",
+      "sheet": "Process Master",
+      "columns": null,
+      "data_start": 3,
+      "required_keys": [
+        "Process"
+      ],
+      "header_row": 2,
+      "group_row": 1,
+      "merge_columns": [
+        "Rate/UOM"
+      ]
+    },
+    {
+      "table": "Std BOP",
+      "sheet": "BOP",
+      "columns": null,
+      "data_start": 3,
+      "required_keys": [
+        "Customer No"
+      ],
+      "header_row": 2
+    },
+    {
+      "table": "Non Std BOP",
+      "sheet": "Buy NonStd",
+      "columns": null,
+      "data_start": 3,
+      "required_keys": [
+        "Customer No"
+      ],
+      "header_row": 2
+    },
+    {
+      "table": "Norms Make",
+      "sheet": "Norms",
+      "columns": {
+        "Supplier": "A",
+        "ICC": "B",
+        "REJ": "C",
+        "OH": "D",
+        "PROFIT": "E",
+        "EFFICIENCY": "F"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Supplier"
+      ],
+      "blank_as_zero": [
+        "ICC",
+        "REJ",
+        "OH",
+        "PROFIT"
+      ]
+    },
+    {
+      "table": "Norms Applicability",
+      "sheet": "Norms",
+      "columns": {
+        "Supplier": "L",
+        "ICC": "M",
+        "REJ": "N",
+        "OH": "O",
+        "PROFIT": "P"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Supplier"
+      ]
+    },
+    {
+      "table": "Norms Assy",
+      "sheet": "Norms",
+      "columns": {
+        "Supplier": "AO",
+        "ICC": "AP",
+        "REJ": "AQ",
+        "OH": "AR",
+        "PROFIT": "AS"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Supplier"
+      ],
+      "blank_as_zero": [
+        "ICC",
+        "REJ",
+        "OH",
+        "PROFIT"
+      ]
+    },
+    {
+      "table": "Norms Buy Std",
+      "sheet": "Norms",
+      "columns": {
+        "Supplier": "AZ",
+        "ICC": "BA",
+        "REJ": "BB",
+        "OH": "BC",
+        "PROFIT": "BD",
+        "Royalty": "BF"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Supplier"
+      ],
+      "blank_as_zero": [
+        "ICC",
+        "REJ",
+        "OH",
+        "PROFIT",
+        "Royalty"
+      ]
+    },
+    {
+      "table": "Norms PnF",
+      "sheet": "Norms",
+      "columns": {
+        "Type": "CI",
+        "Factor": "CJ"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Type"
+      ]
+    },
+    {
+      "table": "Shift Bands",
+      "sheet": "Norms",
+      "columns": {
+        "Supplier": "CQ"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Supplier"
+      ],
+      "unpivot": [
+        {
+          "column": "CR",
+          "fields": {
+            "Min": 0,
+            "Max": 401
+          }
+        },
+        {
+          "column": "CS",
+          "fields": {
+            "Min": 401,
+            "Max": 1000
+          }
+        },
+        {
+          "column": "CT",
+          "fields": {
+            "Min": 1000,
+            "Max": 2001
+          }
+        },
+        {
+          "column": "CU",
+          "fields": {
+            "Min": 2001,
+            "Max": 5001
+          }
+        }
+      ],
+      "value_field": "Rate"
+    },
+    {
+      "table": "Special RM",
+      "sheet": "Special RM",
+      "columns": {
+        "Material Code": "C",
+        "Material": "D",
+        "APR#18": "E",
+        "OCT#18": "F",
+        "APR#19": "G",
+        "OCT#19": "H",
+        "APR#21": "I",
+        "DEC#21": "J",
+        "JUN#22": "K"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Material Code"
+      ]
+    },
+    {
+      "table": "Special norms",
+      "sheet": "Special norms",
+      "columns": {
+        "Supplier": "B",
+        "Hanger Cost": "C",
+        "ICC": "D",
+        "REJ ON INJ MOLDED PART": "E",
+        "REJ ON MATERIAL & PROCESS": "F",
+        "OVERALL REJECTION": "G",
+        "OVERHEAD": "H",
+        "PROFIT": "I",
+        "PnF": "X"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Supplier"
+      ]
+    },
+    {
+      "table": "Paint Applicability",
+      "sheet": "Special norms",
+      "columns": {
+        "Supplier": "K",
+        "ICC": "L",
+        "REJ ON INJ MOLDED PART": "M",
+        "REJ ON MATERIAL & PROCESS": "N",
+        "OVERALL REJECTION": "O",
+        "OVERHEAD": "P",
+        "PROFIT": "Q"
+      },
+      "data_start": 3,
+      "required_keys": [
+        "Supplier"
+      ]
+    },
+    {
+      "table": "eBom",
+      "sheet": "eBom",
+      "columns": null,
+      "data_start": 3,
+      "required_keys": [
+        "Material Code"
+      ],
+      "header_row": 2,
+      "group_row": 1,
+      "merge_columns": [
+        "Rate/UOM",
+        "Scrap Rate"
+      ]
+    },
+    {
+      "table": "Scrap Stamping",
+      "sheet": "Scrap Stamping",
+      "columns": null,
+      "data_start": 2,
+      "required_keys": [
+        "Stamping"
+      ],
+      "header_row": 1
+    },
+    {
+      "table": "Consumable",
+      "sheet": "Consumable",
+      "columns": null,
+      "data_start": 3,
+      "required_keys": [
+        "Base Part"
+      ],
+      "header_row": 2
+    },
+    {
+      "table": "Seat Output Matrix",
+      "sheet": "Seat_Output_Matrix",
+      "columns": null,
+      "data_start": 2,
+      "required_keys": [
+        "Base"
+      ],
+      "header_row": 1
+    },
+    {
+      "table": "Casting Complexity Master",
+      "sheet": "Casting Complexity Master",
+      "columns": null,
+      "data_start": 4,
+      "required_keys": [],
+      "header_row": 3
+    },
+    {
+      "table": "Casting Recipe Master",
+      "sheet": "Casting Recipie Master",
+      "columns": null,
+      "data_start": 3,
+      "required_keys": [
+        "Addition in kg"
+      ],
+      "header_row": 2
+    },
+    {
+      "table": "Net Consumption base",
+      "sheet": "Net Consumption base",
+      "normalizer": "consumption_rules"
+    },
+    {
+      "table": "Blank Consumption base",
+      "sheet": "Blank Consumption base",
+      "normalizer": "consumption_rules"
+    },
+    {
+      "table": "Gross Consumption base",
+      "sheet": "Gross Consumption base",
+      "normalizer": "consumption_rules"
+    },
+    {
+      "table": "Assy MHR",
+      "sheet": "Assy",
+      "columns": {
+        "Supplier": "A"
+      },
+      "data_start": 4,
+      "required_keys": [
+        "Supplier"
+      ],
+      "unpivot": [
+        {
+          "column": 2,
+          "fields": {
+            "Operation Index": 0
+          }
+        },
+        {
+          "column": 3,
+          "fields": {
+            "Operation Index": 1
+          }
+        },
+        {
+          "column": 4,
+          "fields": {
+            "Operation Index": 2
+          }
+        },
+        {
+          "column": 5,
+          "fields": {
+            "Operation Index": 3
+          }
+        },
+        {
+          "column": 6,
+          "fields": {
+            "Operation Index": 4
+          }
+        },
+        {
+          "column": 7,
+          "fields": {
+            "Operation Index": 5
+          }
+        },
+        {
+          "column": 8,
+          "fields": {
+            "Operation Index": 6
+          }
+        },
+        {
+          "column": 9,
+          "fields": {
+            "Operation Index": 7
+          }
+        },
+        {
+          "column": 10,
+          "fields": {
+            "Operation Index": 8
+          }
+        },
+        {
+          "column": 11,
+          "fields": {
+            "Operation Index": 9
+          }
+        },
+        {
+          "column": 12,
+          "fields": {
+            "Operation Index": 10
+          }
+        },
+        {
+          "column": 13,
+          "fields": {
+            "Operation Index": 11
+          }
+        },
+        {
+          "column": 14,
+          "fields": {
+            "Operation Index": 12
+          }
+        },
+        {
+          "column": 15,
+          "fields": {
+            "Operation Index": 13
+          }
+        },
+        {
+          "column": 16,
+          "fields": {
+            "Operation Index": 14
+          }
+        },
+        {
+          "column": 17,
+          "fields": {
+            "Operation Index": 15
+          }
+        },
+        {
+          "column": 18,
+          "fields": {
+            "Operation Index": 16
+          }
+        },
+        {
+          "column": 19,
+          "fields": {
+            "Operation Index": 17
+          }
+        },
+        {
+          "column": 20,
+          "fields": {
+            "Operation Index": 18
+          }
+        },
+        {
+          "column": 21,
+          "fields": {
+            "Operation Index": 19
+          }
+        },
+        {
+          "column": 22,
+          "fields": {
+            "Operation Index": 20
+          }
+        }
+      ],
+      "value_field": "Value"
+    },
+    {
+      "table": "Assy CT",
+      "sheet": "Assy",
+      "columns": {
+        "Supplier": "BX"
+      },
+      "data_start": 4,
+      "required_keys": [
+        "Supplier"
+      ],
+      "unpivot": [
+        {
+          "column": 77,
+          "fields": {
+            "Operation Index": 0
+          }
+        },
+        {
+          "column": 78,
+          "fields": {
+            "Operation Index": 1
+          }
+        },
+        {
+          "column": 79,
+          "fields": {
+            "Operation Index": 2
+          }
+        },
+        {
+          "column": 80,
+          "fields": {
+            "Operation Index": 3
+          }
+        },
+        {
+          "column": 81,
+          "fields": {
+            "Operation Index": 4
+          }
+        },
+        {
+          "column": 82,
+          "fields": {
+            "Operation Index": 5
+          }
+        },
+        {
+          "column": 83,
+          "fields": {
+            "Operation Index": 6
+          }
+        },
+        {
+          "column": 84,
+          "fields": {
+            "Operation Index": 7
+          }
+        },
+        {
+          "column": 85,
+          "fields": {
+            "Operation Index": 8
+          }
+        },
+        {
+          "column": 86,
+          "fields": {
+            "Operation Index": 9
+          }
+        },
+        {
+          "column": 87,
+          "fields": {
+            "Operation Index": 10
+          }
+        },
+        {
+          "column": 88,
+          "fields": {
+            "Operation Index": 11
+          }
+        },
+        {
+          "column": 89,
+          "fields": {
+            "Operation Index": 12
+          }
+        },
+        {
+          "column": 90,
+          "fields": {
+            "Operation Index": 13
+          }
+        },
+        {
+          "column": 91,
+          "fields": {
+            "Operation Index": 14
+          }
+        },
+        {
+          "column": 92,
+          "fields": {
+            "Operation Index": 15
+          }
+        },
+        {
+          "column": 93,
+          "fields": {
+            "Operation Index": 16
+          }
+        },
+        {
+          "column": 94,
+          "fields": {
+            "Operation Index": 17
+          }
+        },
+        {
+          "column": 95,
+          "fields": {
+            "Operation Index": 18
+          }
+        },
+        {
+          "column": 96,
+          "fields": {
+            "Operation Index": 19
+          }
+        },
+        {
+          "column": 97,
+          "fields": {
+            "Operation Index": 20
+          }
+        }
+      ],
+      "value_field": "Value"
+    },
+    {
+      "table": "Assy Handling",
+      "sheet": "Assy",
+      "columns": {
+        "Supplier": "ES"
+      },
+      "data_start": 4,
+      "required_keys": [
+        "Supplier"
+      ],
+      "unpivot": [
+        {
+          "column": 150,
+          "fields": {
+            "Operation Index": 0
+          }
+        },
+        {
+          "column": 151,
+          "fields": {
+            "Operation Index": 1
+          }
+        },
+        {
+          "column": 152,
+          "fields": {
+            "Operation Index": 2
+          }
+        },
+        {
+          "column": 153,
+          "fields": {
+            "Operation Index": 3
+          }
+        },
+        {
+          "column": 154,
+          "fields": {
+            "Operation Index": 4
+          }
+        },
+        {
+          "column": 155,
+          "fields": {
+            "Operation Index": 5
+          }
+        },
+        {
+          "column": 156,
+          "fields": {
+            "Operation Index": 6
+          }
+        },
+        {
+          "column": 157,
+          "fields": {
+            "Operation Index": 7
+          }
+        },
+        {
+          "column": 158,
+          "fields": {
+            "Operation Index": 8
+          }
+        },
+        {
+          "column": 159,
+          "fields": {
+            "Operation Index": 9
+          }
+        },
+        {
+          "column": 160,
+          "fields": {
+            "Operation Index": 10
+          }
+        },
+        {
+          "column": 161,
+          "fields": {
+            "Operation Index": 11
+          }
+        },
+        {
+          "column": 162,
+          "fields": {
+            "Operation Index": 12
+          }
+        },
+        {
+          "column": 163,
+          "fields": {
+            "Operation Index": 13
+          }
+        },
+        {
+          "column": 164,
+          "fields": {
+            "Operation Index": 14
+          }
+        },
+        {
+          "column": 165,
+          "fields": {
+            "Operation Index": 15
+          }
+        },
+        {
+          "column": 166,
+          "fields": {
+            "Operation Index": 16
+          }
+        },
+        {
+          "column": 167,
+          "fields": {
+            "Operation Index": 17
+          }
+        },
+        {
+          "column": 168,
+          "fields": {
+            "Operation Index": 18
+          }
+        },
+        {
+          "column": 169,
+          "fields": {
+            "Operation Index": 19
+          }
+        },
+        {
+          "column": 170,
+          "fields": {
+            "Operation Index": 20
+          }
+        }
+      ],
+      "value_field": "Value"
+    }
+  ],
+  "cell_tables": [
+    {
+      "table": "Hard Parameters",
+      "sheet": "Norms",
+      "keys": {
+        "Name": "HRS"
+      },
+      "cells": {
+        "Factor": "AC4"
+      }
+    }
+  ]
+}

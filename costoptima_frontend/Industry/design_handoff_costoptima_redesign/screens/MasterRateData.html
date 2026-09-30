@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="CostOptima — Master Rate Data" description="Company-wide merged workbook with run-merge and version rollback" -->
+<helmet><script src="./ds-base.js"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></helmet>
+<div data-screen-label="Master Rate Data" style="display:flex;min-height:100vh;background:#F7F8FA;font-family:'Manrope',system-ui,sans-serif;color:#1C2430">
+<aside style="width:240px;flex-shrink:0;background:#182430;color:#9AA7B7;padding:20px 14px;display:flex;flex-direction:column;gap:2px">
+<div style="display:flex;align-items:center;gap:10px;padding:6px 10px 20px;color:#fff;font-weight:800;font-size:16px"><span style="width:30px;height:30px;border-radius:9px;background:#3E6E8E;display:flex;align-items:center;justify-content:center;font-size:13px">▦</span>CostOptima</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">☰ Calculations</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">＋ New Calculation</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⛁ Masters</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">▤ PDF Convertor</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">◈ Commodity Types</div>
+<div style="margin-top:16px;padding:4px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#5A6878;font-weight:700">Data</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;color:#fff;background:rgba(255,255,255,.08)">⛓ Master Rate Data</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⇩ Outputs</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">↻ History</div>
+<div style="margin-top:16px;padding:4px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#5A6878;font-weight:700">System</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⚙ Settings</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7;margin-top:auto">◍ Profile</div>
+</aside>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex-shrink:0;background:#fff;border-bottom:1px solid #E4E7EC;display:flex;align-items:center;padding:0 32px"><div style="font-size:12.5px;color:#6B7686;font-weight:600"><b style="color:#1C2430">Master Rate Data</b></div></div>
+<div style="flex:1;padding:32px 36px;overflow:auto">
+<h1 style="font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em">Master Rate Data</h1>
+<p style="font-size:13.5px;color:#6B7686;margin:0 0 20px;font-weight:500;max-width:720px;line-height:1.5">Combines every commodity's Process Master, Material Master, Non Std BOP and Std BOP into one dataset.</p>
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(20,30,45,.05);margin-bottom:18px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+<span style="font-size:13px;color:#6B7686;font-weight:600">Last merged: version 14 (16 Sep 2026, 18:42)</span>
+<div style="display:flex;gap:10px">
+<button style="border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;border:1px solid #E4E7EC;background:#fff;color:#1C2430;cursor:pointer">Show Version History</button>
+<button style="border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;border:1px solid #E4E7EC;background:#fff;color:#1C2430;cursor:pointer">⇩ Export All</button>
+<button style="border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;background:#3E6E8E;border:1px solid #3E6E8E;color:#fff;cursor:pointer">▶ Start Merge</button>
+</div>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(20,30,45,.05)">
+<div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+<h3 style="margin:0;font-size:15.5px;font-weight:800">Merged Dataset — Process Master</h3>
+<input placeholder="Search rows…" style="border:1px solid #E4E7EC;border-radius:10px;padding:9px 12px;font-size:13px;width:240px;background:#F7F8FA">
+</div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+<thead><tr>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Commodity</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Process Step</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Rate / Hr</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Source</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">Forging</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">Heating</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">₹1,240</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap"><span style="background:#EAF1F5;color:#2D5470;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px">Process Master</span></td></tr>
+<tr><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">Casting</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">Melting</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">₹980</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap"><span style="background:#EAF1F5;color:#2D5470;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px">Process Master</span></td></tr>
+<tr><td style="padding:13px 12px;white-space:nowrap">Sheet Metal</td><td style="padding:13px 12px;white-space:nowrap">Blanking</td><td style="padding:13px 12px;white-space:nowrap">₹720</td><td style="padding:13px 12px;white-space:nowrap"><span style="background:#EAF1F5;color:#2D5470;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px">Process Master</span></td></tr>
+</tbody></table></div>
+</div>
+</div>
+</div>
+</div>
+
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# secrets / env
+.env
+*.env
+!.env.example
+
+# python / node
+__pycache__/
+*.pyc
+venv/
+.pytest_cache/
+node_modules/
+dist/
+
+# runtime data
+uploads/
+logs/
+*.db
+*.sqlite*
+
+# business data & legacy reference (not for a public repo)
+*.xlsx
+*.xls
+legacy_reference/
+PCM/
+G MOHAN_*
+SALEKAR SANTOSH_*
+SECURITY_NOTE.md

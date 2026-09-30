@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+logs/
+uploads/
+tests/
+*.xlsx
+*.xlsm
+*.zip
+*.db
+*.sqlite
+node_modules/

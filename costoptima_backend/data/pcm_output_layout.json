@@ -1,0 +1,2000 @@
+{
+  "_comment": [
+    "Legacy PCM output layout, derived from a real legacy output workbook by",
+    "tools/derive_output_layout.py. Regenerate with that tool when the legacy",
+    "template changes - this is a JSON regeneration, not a code change.",
+    "",
+    "'source' binds a legacy column to an engine field. null means the binding is",
+    "UNKNOWN: the column is emitted blank and listed in 'unbound_columns'. Those",
+    "are Needs Confirmation items - do not guess them.",
+    "",
+    "'emit_diagnostics' controls whether the traceability sheets (Errors,",
+    "Provenance, Formula Trace, End Item Input) are appended. Legacy produced no",
+    "such sheets, so set it false when an output must match legacy sheet-for-sheet."
+  ],
+  "template": "2302C S302 FENDER OUTER TRIMS BC 10 Sep 2026 09.52.04 AM_50002264.xlsx",
+  "sheet_order": [
+    "SBC",
+    "End Item",
+    "Master_Output",
+    "Analysis",
+    "End Item Analysis",
+    "Make",
+    "Buy Std",
+    "Assy",
+    "Pkg",
+    "Frt",
+    "Paint",
+    "Special Process"
+  ],
+  "emit_diagnostics": true,
+  "diagnostic_sheets": [
+    "End Item Input",
+    "Errors",
+    "Provenance",
+    "Formula Trace"
+  ],
+  "sheets": {
+    "SBC": {
+      "position": 0,
+      "header_row": 2,
+      "label_row": [
+        null,
+        null,
+        null,
+        "MX 1",
+        "MX 2",
+        "MX 3",
+        "MX 5",
+        "MX 5[O]",
+        "AX 5",
+        "AX 7",
+        "AX7L",
+        "ZENITH"
+      ],
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 25.71
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": null
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": null
+        },
+        {
+          "header": "BASE",
+          "source": "MX 1",
+          "width": 11.71
+        },
+        {
+          "header": "BASE 1",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "BASE 2",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MID 1",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MID 2",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "HIGH 1",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "HIGH 2",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "HIGH+ 1",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "HIGH+ 2",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "End Item": {
+      "position": 1,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 15.71
+        },
+        {
+          "header": "Supplier",
+          "source": "Supplier",
+          "width": null
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 20.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": null
+        },
+        {
+          "header": "Type",
+          "source": "Type",
+          "width": 15.71
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "Master_Output": {
+      "position": 2,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "PF Code",
+          "source": "PF Code",
+          "width": 15.71
+        },
+        {
+          "header": "Project",
+          "source": "Project",
+          "width": null
+        },
+        {
+          "header": "Part Name",
+          "source": "Part Name",
+          "width": null
+        },
+        {
+          "header": "Sector & Location",
+          "source": "Sector & Location",
+          "width": null
+        },
+        {
+          "header": "BC / SBC / TKO / RoCM",
+          "source": "BC / SBC / TKO / RoCM",
+          "width": 11.14
+        },
+        {
+          "header": "Date",
+          "source": "Date",
+          "width": 7.71
+        },
+        {
+          "header": "Estimation Revision",
+          "source": "Estimation Revision",
+          "width": null
+        },
+        {
+          "header": "0 / 1 / 2 / 3",
+          "source": "0 / 1 / 2 / 3",
+          "width": 8.71
+        },
+        {
+          "header": "Supplier",
+          "source": "Supplier",
+          "width": null
+        },
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 20.71
+        },
+        {
+          "header": "Function",
+          "source": "Function",
+          "width": 10.71
+        },
+        {
+          "header": "Supplier No",
+          "source": "Supplier No",
+          "width": 12.71
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 20.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 8.57
+        },
+        {
+          "header": "2D DWG/CAD Revision No",
+          "source": "2D DWG/CAD Revision No",
+          "width": null
+        },
+        {
+          "header": "Type",
+          "source": "Type",
+          "width": null
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": null
+        },
+        {
+          "header": "Commodity",
+          "source": "Commodity",
+          "width": null
+        },
+        {
+          "header": "Operation Process",
+          "source": "Operation Process",
+          "width": null
+        },
+        {
+          "header": "No of Points",
+          "source": "No of Points",
+          "width": null
+        },
+        {
+          "header": "Category",
+          "source": "Category",
+          "width": null
+        },
+        {
+          "header": "Special Process",
+          "source": "Special Process",
+          "width": null
+        },
+        {
+          "header": "Material Code",
+          "source": "Material Code",
+          "width": null
+        },
+        {
+          "header": "Material",
+          "source": "Material",
+          "width": null
+        },
+        {
+          "header": "Grade",
+          "source": "Grade",
+          "width": null
+        },
+        {
+          "header": "Material Family",
+          "source": "Material Family",
+          "width": null
+        },
+        {
+          "header": "Material Sub Family",
+          "source": "Material Sub Family",
+          "width": null
+        },
+        {
+          "header": "Material Grade",
+          "source": "Material Grade",
+          "width": null
+        },
+        {
+          "header": "RM Base",
+          "source": "RM Base",
+          "width": null
+        },
+        {
+          "header": "Color",
+          "source": "Color",
+          "width": null
+        },
+        {
+          "header": "Surface Area (in SQM)",
+          "source": "Surface Area (in SQM)",
+          "width": null
+        },
+        {
+          "header": "L",
+          "source": "L",
+          "width": null
+        },
+        {
+          "header": "W",
+          "source": "W",
+          "width": null
+        },
+        {
+          "header": "H",
+          "source": "H",
+          "width": null
+        },
+        {
+          "header": "thk",
+          "source": "thk",
+          "width": null
+        },
+        {
+          "header": "Part Wt",
+          "source": "Part Wt",
+          "width": null
+        },
+        {
+          "header": "Gross Wt",
+          "source": "Gross Wt",
+          "width": null
+        },
+        {
+          "header": "m/c Tonnage",
+          "source": "m/c Tonnage",
+          "width": null
+        },
+        {
+          "header": "Cycle Time",
+          "source": "Cycle Time",
+          "width": null
+        },
+        {
+          "header": "Cavity",
+          "source": "Cavity",
+          "width": null
+        },
+        {
+          "header": "HRS Y or N",
+          "source": "HRS Y or N",
+          "width": null
+        },
+        {
+          "header": "Process / Assy Name",
+          "source": "Process / Assy Name",
+          "width": null
+        },
+        {
+          "header": "Finish",
+          "source": "Finish",
+          "width": null
+        },
+        {
+          "header": "Process Signoff Ref no",
+          "source": "Process Signoff Ref no",
+          "width": null
+        },
+        {
+          "header": "RM Rate/UOM",
+          "source": "RM Rate/UOM",
+          "width": null
+        },
+        {
+          "header": "RM Cost",
+          "source": "RM Cost",
+          "width": null
+        },
+        {
+          "header": "Process Cost",
+          "source": "Process Cost",
+          "width": null
+        },
+        {
+          "header": "Basic Cost/Pc",
+          "source": "Basic Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "ICC Cost",
+          "source": "ICC Cost",
+          "width": null
+        },
+        {
+          "header": "REJ Cost",
+          "source": "REJ Cost",
+          "width": null
+        },
+        {
+          "header": "O&H Cost",
+          "source": "O&H Cost",
+          "width": null
+        },
+        {
+          "header": "PROFIT Cost",
+          "source": "PROFIT Cost",
+          "width": null
+        },
+        {
+          "header": "Markup Cost/Pc",
+          "source": "Markup Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "Total Cost/Pc",
+          "source": "Total Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "Assy CT per Point",
+          "source": "Assy CT per Point",
+          "width": null
+        },
+        {
+          "header": "Assy Handling Time",
+          "source": "Assy Handling Time",
+          "width": null
+        },
+        {
+          "header": "Assy MHR",
+          "source": "Assy MHR",
+          "width": null
+        },
+        {
+          "header": "Assy CT(in sec)",
+          "source": "Assy CT(in sec)",
+          "width": null
+        },
+        {
+          "header": "Special RM Cost",
+          "source": "Special RM Cost",
+          "width": null
+        },
+        {
+          "header": "Special Process Cost",
+          "source": "Special Process Cost",
+          "width": null
+        },
+        {
+          "header": "Special Markup",
+          "source": "Special Markup",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "Analysis": {
+      "position": 3,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "Cost Driver",
+          "source": "Cost Driver",
+          "width": 15.71
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "End Item Analysis": {
+      "position": 4,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": null,
+          "source": null,
+          "width": 15.71
+        },
+        {
+          "header": "BSO COVER ASSY LH",
+          "source": "BSO COVER ASSY LH",
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": null,
+          "source": null,
+          "width": null
+        },
+        {
+          "header": "BSO COVER ASSY RH",
+          "source": "BSO COVER ASSY RH",
+          "width": null
+        }
+      ]
+    },
+    "Make": {
+      "position": 5,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "Supplier",
+          "source": "Supplier",
+          "width": 15.71
+        },
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": null
+        },
+        {
+          "header": "Supplier No",
+          "source": "Supplier No",
+          "width": null
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": null
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 11.14
+        },
+        {
+          "header": "2D DWG/CAD Revision No",
+          "source": "2D DWG/CAD Revision No",
+          "width": 7.71
+        },
+        {
+          "header": "Type",
+          "source": "Type",
+          "width": null
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": 8.71
+        },
+        {
+          "header": "Material Code",
+          "source": "Material Code",
+          "width": null
+        },
+        {
+          "header": "Material Family",
+          "source": "Material Family",
+          "width": 20.71
+        },
+        {
+          "header": "Material Grade",
+          "source": "Material Grade",
+          "width": 10.71
+        },
+        {
+          "header": "Color",
+          "source": "Color",
+          "width": 12.71
+        },
+        {
+          "header": "L",
+          "source": "L",
+          "width": 20.71
+        },
+        {
+          "header": "W",
+          "source": "W",
+          "width": 8.57
+        },
+        {
+          "header": "H",
+          "source": "H",
+          "width": null
+        },
+        {
+          "header": "thk",
+          "source": "thk",
+          "width": null
+        },
+        {
+          "header": "Part Wt",
+          "source": "Part Wt",
+          "width": null
+        },
+        {
+          "header": "Gross Wt",
+          "source": "Gross Wt",
+          "width": null
+        },
+        {
+          "header": "m/c Tonnage",
+          "source": "m/c Tonnage",
+          "width": null
+        },
+        {
+          "header": "Cycle Time",
+          "source": "Cycle Time",
+          "width": null
+        },
+        {
+          "header": "Cavity",
+          "source": "Cavity",
+          "width": null
+        },
+        {
+          "header": "HRS Y or N",
+          "source": "HRS Y or N",
+          "width": null
+        },
+        {
+          "header": "RM Base",
+          "source": "RM Base",
+          "width": null
+        },
+        {
+          "header": "Rate Kg",
+          "source": "Rate Kg",
+          "width": null
+        },
+        {
+          "header": "RM Cost/Pc",
+          "source": "RM Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "Shift Factor",
+          "source": "Shift Factor",
+          "width": null
+        },
+        {
+          "header": "Shift Rate",
+          "source": "Shift Rate",
+          "width": null
+        },
+        {
+          "header": "EFFICIENCY",
+          "source": "EFFICIENCY",
+          "width": null
+        },
+        {
+          "header": "Pc per shift",
+          "source": "Pc per shift",
+          "width": null
+        },
+        {
+          "header": "Molding Cost",
+          "source": "Molding Cost",
+          "width": null
+        },
+        {
+          "header": "Deflashing cost",
+          "source": "Deflashing cost",
+          "width": null
+        },
+        {
+          "header": "Process Cost/Pc",
+          "source": "Process Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "Basic Cost/Pc",
+          "source": "Basic Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "ICC",
+          "source": "ICC",
+          "width": null
+        },
+        {
+          "header": "REJ",
+          "source": "REJ",
+          "width": null
+        },
+        {
+          "header": "OH",
+          "source": "OH",
+          "width": null
+        },
+        {
+          "header": "PROFIT",
+          "source": "PROFIT",
+          "width": null
+        },
+        {
+          "header": "ICC COST",
+          "source": "ICC Cost",
+          "width": null
+        },
+        {
+          "header": "REJ COST",
+          "source": "REJ Cost",
+          "width": null
+        },
+        {
+          "header": "OH COST",
+          "source": "OH Cost",
+          "width": null
+        },
+        {
+          "header": "PROFIT COST",
+          "source": "Profit Cost",
+          "width": null
+        },
+        {
+          "header": "MARKUP/Pc",
+          "source": "MARKUP/Pc",
+          "width": null
+        },
+        {
+          "header": "Total Cost/Pc",
+          "source": "Total",
+          "width": null
+        },
+        {
+          "header": "PnF/Pc",
+          "source": "PnF/Pc",
+          "width": null
+        },
+        {
+          "header": "Grand Total Cost/Pc",
+          "source": "Grand Total Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "RM Cost/Veh",
+          "source": "RM Cost/Veh",
+          "width": null
+        },
+        {
+          "header": "Process Cost/Veh",
+          "source": "Process Cost/Veh",
+          "width": null
+        },
+        {
+          "header": "BASIC Cost/Veh",
+          "source": "BASIC Cost/Veh",
+          "width": null
+        },
+        {
+          "header": "MARKUP/Veh",
+          "source": "MARKUP/Veh",
+          "width": null
+        },
+        {
+          "header": "Total Cost/Veh",
+          "source": "Total Cost/Veh",
+          "width": null
+        },
+        {
+          "header": "PnF/Veh",
+          "source": "PnF/Veh",
+          "width": null
+        },
+        {
+          "header": "Grand Total Cost/Veh",
+          "source": "Grand Total Cost/Veh",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        },
+        {
+          "header": "Sector & Location",
+          "source": "Sector & Location",
+          "width": null
+        }
+      ]
+    },
+    "Buy Std": {
+      "position": 6,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "Supplier",
+          "source": "Supplier",
+          "width": 8.57
+        },
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 15.71
+        },
+        {
+          "header": "Supplier No",
+          "source": "Supplier No",
+          "width": 8.57
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 15.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 20.71
+        },
+        {
+          "header": "2D DWG/CAD Revision No",
+          "source": "2D DWG/CAD Revision No",
+          "width": 8.57
+        },
+        {
+          "header": "Type",
+          "source": "Type",
+          "width": null
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": null
+        },
+        {
+          "header": "Basic Cost/Pc",
+          "source": "Basic Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "ICC",
+          "source": "ICC",
+          "width": null
+        },
+        {
+          "header": "REJ",
+          "source": "REJ",
+          "width": null
+        },
+        {
+          "header": "O&H",
+          "source": "O&H",
+          "width": null
+        },
+        {
+          "header": "PROFIT",
+          "source": "PROFIT",
+          "width": null
+        },
+        {
+          "header": "ICC Cost",
+          "source": "ICC Cost",
+          "width": null
+        },
+        {
+          "header": "REJ Cost",
+          "source": "REJ Cost",
+          "width": null
+        },
+        {
+          "header": "O&H Cost",
+          "source": "OH Cost",
+          "width": null
+        },
+        {
+          "header": "PROFIT Cost",
+          "source": "Profit Cost",
+          "width": null
+        },
+        {
+          "header": "Markup",
+          "source": "Markup",
+          "width": null
+        },
+        {
+          "header": "Total/Pc",
+          "source": "Total",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "Assy": {
+      "position": 7,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "Supplier",
+          "source": "Supplier",
+          "width": 8.57
+        },
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 15.71
+        },
+        {
+          "header": "Supplier No",
+          "source": "Supplier No",
+          "width": 8.57
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 15.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 20.71
+        },
+        {
+          "header": "Operation Process",
+          "source": "Operation Process",
+          "width": 8.57
+        },
+        {
+          "header": "No of Points",
+          "source": "No of Points",
+          "width": null
+        },
+        {
+          "header": "Category",
+          "source": "Category",
+          "width": null
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": null
+        },
+        {
+          "header": "CT Per Point",
+          "source": "CT Per Point",
+          "width": null
+        },
+        {
+          "header": "Handling Time",
+          "source": "Handling Time",
+          "width": null
+        },
+        {
+          "header": "MHR",
+          "source": "MHR",
+          "width": null
+        },
+        {
+          "header": "CT(sec)",
+          "source": "CT(sec)",
+          "width": null
+        },
+        {
+          "header": "Basic cost/ pc",
+          "source": "Basic Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "ICC",
+          "source": "ICC",
+          "width": null
+        },
+        {
+          "header": "REJ",
+          "source": "REJ",
+          "width": null
+        },
+        {
+          "header": "O&H",
+          "source": "O&H",
+          "width": null
+        },
+        {
+          "header": "PROFIT",
+          "source": "PROFIT",
+          "width": null
+        },
+        {
+          "header": "ICC Cost",
+          "source": "ICC Cost",
+          "width": null
+        },
+        {
+          "header": "REJ Cost",
+          "source": "REJ Cost",
+          "width": null
+        },
+        {
+          "header": "O&H Cost",
+          "source": "O&H Cost",
+          "width": null
+        },
+        {
+          "header": "PROFIT Cost",
+          "source": "PROFIT Cost",
+          "width": null
+        },
+        {
+          "header": "Markup",
+          "source": "Markup",
+          "width": null
+        },
+        {
+          "header": "Total",
+          "source": "Total",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "Pkg": {
+      "position": 8,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 15.71
+        },
+        {
+          "header": "Supplier No",
+          "source": "Supplier No",
+          "width": 8.57
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 15.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 20.71
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": 8.57
+        },
+        {
+          "header": "Basic Cost",
+          "source": "Basic Cost",
+          "width": null
+        },
+        {
+          "header": "Markup",
+          "source": "Markup",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "Frt": {
+      "position": 9,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 15.71
+        },
+        {
+          "header": "Supplier No",
+          "source": "Supplier No",
+          "width": 8.57
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 15.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 20.71
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": 8.57
+        },
+        {
+          "header": "Basic Cost",
+          "source": "Basic Cost",
+          "width": null
+        },
+        {
+          "header": "Markup",
+          "source": "Markup",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "Paint": {
+      "position": 10,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "Sr",
+          "source": "Sr",
+          "width": 8.57
+        },
+        {
+          "header": "Supplier",
+          "source": "Supplier",
+          "width": null
+        },
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 15.71
+        },
+        {
+          "header": "Make Part no",
+          "source": "Make Part no",
+          "width": 8.57
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 15.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 20.71
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": 8.57
+        },
+        {
+          "header": "L",
+          "source": "L",
+          "width": null
+        },
+        {
+          "header": "W",
+          "source": "W",
+          "width": null
+        },
+        {
+          "header": "H",
+          "source": "H",
+          "width": null
+        },
+        {
+          "header": "thk",
+          "source": "thk",
+          "width": null
+        },
+        {
+          "header": "Finish",
+          "source": "Finish",
+          "width": null
+        },
+        {
+          "header": "Painting Area (in SQM)",
+          "source": "Painting Area (in SQM)",
+          "width": null
+        },
+        {
+          "header": "Paint System",
+          "source": "Paint System",
+          "width": 15.71
+        },
+        {
+          "header": "Material Code",
+          "source": "Material Code",
+          "width": null
+        },
+        {
+          "header": "Material",
+          "source": "Material",
+          "width": null
+        },
+        {
+          "header": "Consumption (in Litre)",
+          "source": "Consumption (in Litre)",
+          "width": 8.57
+        },
+        {
+          "header": "No of parts / Jig",
+          "source": "No of parts / Jig",
+          "width": null
+        },
+        {
+          "header": "Make Part Cost",
+          "source": "Make Part Cost",
+          "width": null
+        },
+        {
+          "header": "RM Base",
+          "source": "RM Base",
+          "width": null
+        },
+        {
+          "header": "Rate / Litre",
+          "source": "Rate / Litre",
+          "width": null
+        },
+        {
+          "header": "RM cost / Pc",
+          "source": "RM cost / Pc",
+          "width": null
+        },
+        {
+          "header": "Consumable / Masking Cost",
+          "source": "Consumable / Masking Cost",
+          "width": null
+        },
+        {
+          "header": "Hanger Cost",
+          "source": "Hanger Cost",
+          "width": null
+        },
+        {
+          "header": "Process Cost/Pc",
+          "source": "Process Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "Paint RM Cost",
+          "source": "Paint RM Cost",
+          "width": null
+        },
+        {
+          "header": "Paint Process Cost",
+          "source": "Paint Process Cost",
+          "width": null
+        },
+        {
+          "header": "Basic Cost",
+          "source": "Basic Cost",
+          "width": null
+        },
+        {
+          "header": "ICC",
+          "source": "ICC",
+          "width": null
+        },
+        {
+          "header": "REJ ON INJ MOLDED PART",
+          "source": "REJ ON INJ MOLDED PART",
+          "width": null
+        },
+        {
+          "header": "REJ ON MATERIAL & PROCESS",
+          "source": "REJ ON MATERIAL & PROCESS",
+          "width": null
+        },
+        {
+          "header": "OVERALL REJECTION",
+          "source": "OVERALL REJECTION",
+          "width": null
+        },
+        {
+          "header": "OVERHEAD",
+          "source": "OVERHEAD",
+          "width": null
+        },
+        {
+          "header": "PROFIT",
+          "source": "PROFIT",
+          "width": null
+        },
+        {
+          "header": "ICC Cost",
+          "source": "ICC Cost",
+          "width": null
+        },
+        {
+          "header": "REJ ON INJ MOLDED PART Cost",
+          "source": "REJ ON INJ MOLDED PART Cost",
+          "width": null
+        },
+        {
+          "header": "REJ ON MATERIAL & PROCESS Cost",
+          "source": "REJ ON MATERIAL & PROCESS Cost",
+          "width": null
+        },
+        {
+          "header": "OVERALL REJECTION Cost",
+          "source": "OVERALL REJECTION Cost",
+          "width": null
+        },
+        {
+          "header": "OVERHEAD Cost",
+          "source": "OVERHEAD Cost",
+          "width": null
+        },
+        {
+          "header": "PROFIT Cost",
+          "source": "PROFIT Cost",
+          "width": null
+        },
+        {
+          "header": "Paint Markup",
+          "source": "Paint Markup",
+          "width": null
+        },
+        {
+          "header": "Pnf",
+          "source": "Pnf",
+          "width": null
+        },
+        {
+          "header": "Total Cost/Pc",
+          "source": "Total Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    },
+    "Special Process": {
+      "position": 11,
+      "header_row": 1,
+      "label_row": null,
+      "header_fill": null,
+      "header_bold": false,
+      "freeze_panes": null,
+      "tab_color": null,
+      "columns": [
+        {
+          "header": "Supplier",
+          "source": "Supplier",
+          "width": 8.57
+        },
+        {
+          "header": "End Item",
+          "source": "End Item",
+          "width": 15.71
+        },
+        {
+          "header": "Supplier No",
+          "source": "Supplier No",
+          "width": 8.57
+        },
+        {
+          "header": "Customer No",
+          "source": "Customer No",
+          "width": 15.71
+        },
+        {
+          "header": "Desc",
+          "source": "Desc",
+          "width": 20.71
+        },
+        {
+          "header": "Sr",
+          "source": "Sr",
+          "width": 8.57
+        },
+        {
+          "header": "Qty/Veh",
+          "source": "Qty/Veh",
+          "width": null
+        },
+        {
+          "header": "Commodity",
+          "source": "Commodity",
+          "width": null
+        },
+        {
+          "header": "Surface Area (in SQM)",
+          "source": "Surface Area (in SQM)",
+          "width": null
+        },
+        {
+          "header": "Process / Assy Name",
+          "source": "Process / Assy Name",
+          "width": null
+        },
+        {
+          "header": "Finish",
+          "source": "Finish",
+          "width": null
+        },
+        {
+          "header": "Total RM Cost",
+          "source": "RM Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "Consumable / Masking Cost",
+          "source": "Consumable / Masking Cost",
+          "width": null
+        },
+        {
+          "header": "RM Cost",
+          "source": "RM Cost",
+          "width": 15.71
+        },
+        {
+          "header": "Process Cost",
+          "source": "Process Cost/Pc",
+          "width": 8.57
+        },
+        {
+          "header": "Tier 2 Markup+PnF",
+          "source": "Tier 2 Markup+PnF",
+          "width": null
+        },
+        {
+          "header": "Basic cost",
+          "source": "Basic Cost/Pc",
+          "width": null
+        },
+        {
+          "header": "ICC",
+          "source": "ICC",
+          "width": null
+        },
+        {
+          "header": "REJ",
+          "source": "REJ",
+          "width": null
+        },
+        {
+          "header": "O&H",
+          "source": "O&H",
+          "width": null
+        },
+        {
+          "header": "PROFIT",
+          "source": "PROFIT",
+          "width": null
+        },
+        {
+          "header": "ICC Cost",
+          "source": "ICC Cost",
+          "width": null
+        },
+        {
+          "header": "REJ Cost",
+          "source": "REJ Cost",
+          "width": null
+        },
+        {
+          "header": "O&H Cost",
+          "source": "O&H Cost",
+          "width": null
+        },
+        {
+          "header": "PROFIT Cost",
+          "source": "PROFIT Cost",
+          "width": null
+        },
+        {
+          "header": "MARKUP",
+          "source": "Total Markup",
+          "width": null
+        },
+        {
+          "header": "Total cost /PC",
+          "source": "Total",
+          "width": null
+        },
+        {
+          "header": "MX 1",
+          "source": "MX 1",
+          "width": null
+        },
+        {
+          "header": "MX 2",
+          "source": "MX 2",
+          "width": null
+        },
+        {
+          "header": "MX 3",
+          "source": "MX 3",
+          "width": null
+        },
+        {
+          "header": "MX 5",
+          "source": "MX 5",
+          "width": null
+        },
+        {
+          "header": "MX 5[O]",
+          "source": "MX 5[O]",
+          "width": null
+        },
+        {
+          "header": "AX 5",
+          "source": "AX 5",
+          "width": null
+        },
+        {
+          "header": "AX 7",
+          "source": "AX 7",
+          "width": null
+        },
+        {
+          "header": "AX7L",
+          "source": "AX7L",
+          "width": null
+        },
+        {
+          "header": "ZENITH",
+          "source": "ZENITH",
+          "width": null
+        }
+      ]
+    }
+  },
+  "unbound_columns": {}
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="CostOptima — Users" description="User directory: stats, search, deactivate, invite" -->
+<helmet><script src="./ds-base.js"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></helmet>
+<div data-screen-label="Users" style="display:flex;min-height:100vh;background:#F7F8FA;font-family:'Manrope',system-ui,sans-serif;color:#1C2430">
+<aside style="width:240px;flex-shrink:0;background:#182430;color:#9AA7B7;padding:20px 14px;display:flex;flex-direction:column;gap:2px;overflow-y:auto">
+<div style="display:flex;align-items:center;gap:10px;padding:6px 10px 20px;color:#fff;font-weight:800;font-size:16px"><span style="width:30px;height:30px;border-radius:9px;background:#3E6E8E;display:flex;align-items:center;justify-content:center;font-size:13px">▦</span>CostOptima</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">☰ Calculations</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">＋ New Calculation</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⛁ Masters</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">▤ PDF Convertor</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">◈ Commodity Types</div>
+<div style="margin-top:16px;padding:4px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#5A6878;font-weight:700">Data</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⛓ Master Rate Data</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⇩ Outputs</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">↻ History</div>
+<div style="margin-top:16px;padding:4px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#5A6878;font-weight:700">System</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;color:#fff;background:rgba(255,255,255,.08)">⚙ Settings</div>
+<div style="padding:2px 12px 2px 34px;display:flex;flex-direction:column;gap:2px">
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">Formula Repository</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">Master Configuration</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">Audit Logs</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700;color:#fff;background:rgba(255,255,255,.06)">Users</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">Roles &amp; Permissions</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">Workbook Configuration</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">Output Templates</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">App Configuration</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">◍ Profile</div>
+</aside>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex-shrink:0;background:#fff;border-bottom:1px solid #E4E7EC;display:flex;align-items:center;padding:0 32px"><div style="font-size:12.5px;color:#6B7686;font-weight:600">Settings / <b style="color:#1C2430">Users</b></div></div>
+<div style="flex:1;padding:32px 36px;overflow:auto">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+<div><h1 style="font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em">Users</h1><p style="font-size:13.5px;color:#6B7686;margin:0;font-weight:500">Manage platform access, role assignment, and user activity.</p></div>
+<button style="border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;background:#3E6E8E;border:1px solid #3E6E8E;color:#fff;cursor:pointer">＋ Invite User</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px">
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:14px;padding:18px 20px;box-shadow:0 1px 2px rgba(20,30,45,.04)"><div style="font-size:11px;font-weight:700;color:#6B7686;text-transform:uppercase;letter-spacing:.05em">Total Users</div><div style="font-size:26px;font-weight:800;margin-top:6px">21</div></div>
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:14px;padding:18px 20px;box-shadow:0 1px 2px rgba(20,30,45,.04)"><div style="font-size:11px;font-weight:700;color:#6B7686;text-transform:uppercase;letter-spacing:.05em">Active</div><div style="font-size:26px;font-weight:800;margin-top:6px;color:#2E8B57">18</div></div>
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:14px;padding:18px 20px;box-shadow:0 1px 2px rgba(20,30,45,.04)"><div style="font-size:11px;font-weight:700;color:#6B7686;text-transform:uppercase;letter-spacing:.05em">Inactive</div><div style="font-size:26px;font-weight:800;margin-top:6px;color:#C0392B">3</div></div>
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:14px;padding:18px 20px;box-shadow:0 1px 2px rgba(20,30,45,.04)"><div style="font-size:11px;font-weight:700;color:#6B7686;text-transform:uppercase;letter-spacing:.05em">Admins</div><div style="font-size:26px;font-weight:800;margin-top:6px">4</div></div>
+</div>
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(20,30,45,.05)">
+<div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+<input placeholder="Search name or email…" style="border:1px solid #E4E7EC;border-radius:10px;padding:9px 12px;font-size:13px;width:280px;background:#F7F8FA">
+<button style="border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;border:1px solid #F3C6C0;background:#FBEAE8;color:#C0392B;cursor:pointer">Deactivate All</button>
+</div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+<thead><tr>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC">Name</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC">Email</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC">Role</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC">Status</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC">Actions</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;font-weight:700">Rahul Sharma</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;color:#6B7686">superadmin@costoptima.com</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5">Super Admin</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5"><span style="background:#E7F5EC;color:#2E8B57;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px">Active</span></td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5"><a href="#" style="color:#3E6E8E;font-weight:700;font-size:12px">Edit</a></td></tr>
+<tr><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;font-weight:700">Priya Nair</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;color:#6B7686">admin@costoptima.com</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5">Admin</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5"><span style="background:#E7F5EC;color:#2E8B57;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px">Active</span></td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5"><a href="#" style="color:#3E6E8E;font-weight:700;font-size:12px">Edit</a></td></tr>
+<tr><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;font-weight:700">Arjun Mehta</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;color:#6B7686">hod@costoptima.com</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5">HOD</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5"><span style="background:#FBEAE8;color:#C0392B;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px">Inactive</span></td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5"><a href="#" style="color:#3E6E8E;font-weight:700;font-size:12px">Edit</a></td></tr>
+<tr><td style="padding:13px 12px;font-weight:700">Sneha Kulkarni</td><td style="padding:13px 12px;color:#6B7686">masters@costoptima.com</td><td style="padding:13px 12px">Masters Update</td><td style="padding:13px 12px"><span style="background:#E7F5EC;color:#2E8B57;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px">Active</span></td><td style="padding:13px 12px"><a href="#" style="color:#3E6E8E;font-weight:700;font-size:12px">Edit</a></td></tr>
+</tbody></table></div>
+</div>
+</div>
+</div>
+</div>
+
+</x-dc>
+</body>
+</html>

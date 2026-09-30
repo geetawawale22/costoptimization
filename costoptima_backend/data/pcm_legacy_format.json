@@ -1,0 +1,176 @@
+{
+  "_comment": [
+    "Legacy PCM output FORMAT spec, transcribed from the legacy source code rather than",
+    "reverse-engineered from one sample output workbook.",
+    "",
+    "SOURCE: legacy_reference/PCM_5/'Sheet_Metal_Forging_with summary_chk_Chnages.py'",
+    "Legacy builds output with xlsxwriter and declares named formats via",
+    "workbook.add_format(...). Those declarations are the authoritative format contract;",
+    "the 2302C S302 workbook is only one RESULT of applying them. Every entry below cites",
+    "the legacy line it came from, so it can be re-checked against source.",
+    "",
+    "Legacy declares these same formats repeatedly, once per commodity block (lines 7116,",
+    "11243, 12034, 12122, 12440, 13545, 17476 ...) with identical values. They are",
+    "consolidated here once. Where a block genuinely differs it is listed under",
+    "'sheet_overrides'.",
+    "",
+    "NOTE ON WIDTHS AND ROW HEIGHTS: legacy sets these per sheet via set_column/set_row",
+    "(e.g. lines 7092-7098, 8472-8475) with values that differ by commodity. They are NOT",
+    "reproduced here; column widths continue to come from the derived layout",
+    "(data/pcm_output_layout.json), which measured them from a real output. Transcribing",
+    "every per-commodity set_column call is outstanding work - Needs Confirmation for any",
+    "commodity whose legacy output has not been supplied."
+  ],
+  "number_formats": {
+    "accounting": "_ * #,##0.00_ ;_ * -#,##0.00_ ;_ * \"-\"??_ ;_ @_ ",
+    "percent": "0.00%",
+    "_source": "accounting: line 11241 (dcfrmt); percent: line 11245 (money) and 11253 (wrap_format32)"
+  },
+  "formats": {
+    "base": {
+      "_legacy_name": "dcfrmt / wrap_format1 / wrap_format3",
+      "_source": "line 11241, 11248, 11250",
+      "font_name": "Calibri",
+      "font_size": 8,
+      "text_wrap": true,
+      "valign": "vcenter",
+      "number_format": "@accounting"
+    },
+    "total_row": {
+      "_legacy_name": "dcfrmt1",
+      "_source": "line 11243 (identical at 7116, 12034, 12122, 12440, 13545, 17476)",
+      "font_name": "Calibri",
+      "font_size": 8,
+      "text_wrap": true,
+      "valign": "vcenter",
+      "number_format": "@accounting",
+      "bg_color": "FFFFC000"
+    },
+    "total_row_plain": {
+      "_legacy_name": "bgclr",
+      "_source": "line 11244",
+      "bg_color": "FFFFC000",
+      "valign": "vcenter"
+    },
+    "annotation": {
+      "_legacy_name": "red_header",
+      "_source": "line 11247",
+      "_note": "RED text, not black. The sample workbook reads as bold size 10; legacy declares font_color red explicitly.",
+      "font_name": "Calibri",
+      "font_size": 10,
+      "font_color": "FFFF0000",
+      "bold": true,
+      "align": "left",
+      "valign": "vcenter"
+    },
+    "centered": {
+      "_legacy_name": "wrap_format",
+      "_source": "line 11246",
+      "font_name": "Calibri",
+      "font_size": 8,
+      "text_wrap": true,
+      "align": "center",
+      "valign": "vcenter"
+    },
+    "summary_header_bold": {
+      "_legacy_name": "yellow_frmt_bold",
+      "_source": "lines 8436, 9780, 10282",
+      "_note": "Used only on commodity SUMMARY sheets (sand/gdc/pdc), not on the core output sheets. Font 'Bierstadt Display' is a Microsoft 365 font that may be unavailable; fall back to Calibri.",
+      "font_name": "Bierstadt Display",
+      "font_fallback": "Calibri",
+      "font_size": 12,
+      "bold": true,
+      "font_color": "FF000000",
+      "bg_color": "FFFFC000",
+      "align": "center",
+      "valign": "vcenter",
+      "border": 1,
+      "text_wrap": true,
+      "number_format": "@accounting"
+    }
+  },
+  "annotation_blocks": {
+    "_comment": [
+      "Legacy writes the '3DX' annotation on only SOME sheets. On most commodity blocks the",
+      "write call is COMMENTED OUT in the legacy source (lines 3895, 6459, 7530, 9238,",
+      "13333, 14270, 16024, 16783). Only the calls below are live, which is exactly why the",
+      "sample output carries the annotation on Analysis and End Item Analysis but not on",
+      "Make or Paint. Do not add it to sheets legacy leaves commented out."
+    ],
+    "Analysis": {
+      "_source": "lines 11257-11261 (live, not commented)",
+      "cells": [
+        {
+          "cell": "A23",
+          "value": "Extra Information for 3DX  format suitability , already included in above table.",
+          "format": "annotation"
+        }
+      ],
+      "_gap_found": [
+        "GAP DISCOVERED while wiring this spec. Legacy also writes label rows at A25-A28",
+        "('ICC Cost', 'REJ Cost', 'O&H Cost', 'PROFIT Cost') - legacy lines 11258-11261 - and the",
+        "legacy workbook carries VALUES against those labels for every variant (e.g. MX 1 =",
+        "0.7305483, AX 5 = 5.1368753). The engine does not currently aggregate ICC/REJ/O&H/PROFIT",
+        "into that trailing Analysis block, so the values do not exist.",
+        "",
+        "Writing the labels without their values would produce a workbook that LOOKS complete and",
+        "is not, so they are withheld until the aggregation is implemented. The 3DX annotation at",
+        "A23 is pure text and is written.",
+        "",
+        "STATUS: Missing - Analysis trailing cost-breakdown aggregation. The component values",
+        "already exist per row in the engine ('ICC Cost', 'REJ Cost', 'OH Cost', 'Profit Cost');",
+        "what is missing is the per-variant rollup into rows 25-28."
+      ],
+      "summary_rows_pending": [
+        {
+          "cell": "A25",
+          "value": "ICC Cost",
+          "source_component": "ICC Cost"
+        },
+        {
+          "cell": "A26",
+          "value": "REJ Cost",
+          "source_component": "REJ Cost"
+        },
+        {
+          "cell": "A27",
+          "value": "O&H Cost",
+          "source_component": "OH Cost"
+        },
+        {
+          "cell": "A28",
+          "value": "PROFIT Cost",
+          "source_component": "Profit Cost"
+        }
+      ]
+    },
+    "End Item Analysis": {
+      "_source": "line 12189 (live; written at a computed column/row, not a fixed cell)",
+      "_note": "Legacy computes the position as position_dict[max_col_val+1] + row 15, i.e. one column past the last data column. Reproducing that needs the sheet's own column count at render time, so 'cell' is resolved dynamically rather than fixed. Needs Confirmation that row 15 is constant for all inputs.",
+      "dynamic": {
+        "column_offset_from_last": 1,
+        "row": 15
+      },
+      "cells": [
+        {
+          "value": "Extra Information for 3DX  format suitability , already included in above table.",
+          "format": "annotation"
+        }
+      ]
+    }
+  },
+  "workbook_defaults": {
+    "_source": "No freeze_panes call exists anywhere in the legacy source; confirmed against the sample workbook (0 freeze panes, 0 merged cells, 0 tab colours, 0 borders on core sheets).",
+    "freeze_panes": null,
+    "tab_color": null,
+    "merged_cells": false,
+    "borders_on_core_sheets": false
+  },
+  "apply": {
+    "_comment": "Which parts of this spec the exporter applies. All are switchable so an installation can opt out without a code change.",
+    "base_font": true,
+    "number_formats": true,
+    "total_row_fill": true,
+    "annotation_blocks": true
+  }
+}

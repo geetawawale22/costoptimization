@@ -1,0 +1,133 @@
+{
+  "_comment": [
+    "CostOptima's OWN Excel output structure. Defined from the application's data model,",
+    "not from any legacy workbook.",
+    "",
+    "The legacy 2302C workbook is reference data used to validate NUMBERS. It is not a",
+    "layout source: none of the sheet names, column orders, fills or annotation blocks",
+    "below were taken from it.",
+    "",
+    "Design rules:",
+    "  1. Every sheet states what it is. No unlabelled trailing blocks.",
+    "  2. Identity columns first, then inputs, then computed components, then totals.",
+    "  3. Calculation status travels WITH the data. A row that failed is visible on the",
+    "     sheet that carries it, not only in a separate error log - a reader must never",
+    "     take a partial row for a complete one.",
+    "  4. Provenance is part of the deliverable: definition hash, master version and input",
+    "     hash ship in the workbook, so any number can be traced to the configuration that",
+    "     produced it.",
+    "  5. Commodity sheets are generated from the profiles that actually ran. No sheet is",
+    "     emitted for a profile with no rows, and no profile is hard-coded here.",
+    "",
+    "Variant columns are resolved at runtime from the calculation, never from this file,",
+    "so any project's variant set renders correctly."
+  ],
+
+  "workbook": {
+    "sheet_order": ["Run Summary", "Cost Summary", "Cost Breakdown", "@commodity_sheets", "Validation", "Provenance"],
+    "freeze_header": true,
+    "autofilter": true,
+    "default_column_width": 14,
+    "identity_column_width": 26
+  },
+
+  "style": {
+    "_comment": "CostOptima's own visual language. Deliberately distinct from the legacy amber-on-Calibri-8 convention so that a CostOptima workbook is never mistaken for a legacy one.",
+    "font": { "name": "Aptos Narrow", "fallback": "Calibri", "size": 10 },
+    "header": { "bold": true, "font_color": "FFFFFFFF", "bg_color": "FF1F3864", "wrap": true, "align": "center" },
+    "section": { "bold": true, "font_color": "FF1F3864", "bg_color": "FFD9E2F3" },
+    "total_row": { "bold": true, "bg_color": "FFEDF3FA", "top_border": "thin" },
+    "status": {
+      "Completed": { "font_color": "FF156B2D" },
+      "Needs Review": { "bold": true, "font_color": "FF9C4A00", "bg_color": "FFFFF2CC" },
+      "Failed": { "bold": true, "font_color": "FFB00020", "bg_color": "FFFCE4E4" }
+    },
+    "number_formats": {
+      "currency": "#,##0.00",
+      "quantity": "#,##0.###",
+      "percent": "0.00%",
+      "integer": "#,##0"
+    }
+  },
+
+  "sheets": {
+    "Run Summary": {
+      "purpose": "One-screen answer to: what was calculated, did it succeed, and what is it worth.",
+      "layout": "key_value",
+      "rows": [
+        { "label": "Generated at", "source": "@generated_at" },
+        { "label": "Input workbook", "source": "@input_name" },
+        { "label": "Input SHA-256", "source": "@input_sha256" },
+        { "label": "Rows read", "source": "@rows_total" },
+        { "label": "Rows completed", "source": "@rows_completed" },
+        { "label": "Rows needing review", "source": "@rows_needs_review", "highlight_when_nonzero": true },
+        { "label": "Commodity profiles exercised", "source": "@profiles" },
+        { "label": "Variants", "source": "@variants" },
+        { "label": "Definition SHA-256", "source": "@definition_sha256" }
+      ],
+      "warning_when_needs_review": "This run contains rows that did not complete. Totals below EXCLUDE them and are therefore partial. See the Validation sheet."
+    },
+
+    "Cost Summary": {
+      "purpose": "Total cost per end item per variant - the headline figures.",
+      "identity_columns": ["End Item", "Customer No", "Desc"],
+      "value_columns": "@variants",
+      "number_format": "currency",
+      "total_row": true,
+      "status_column": true
+    },
+
+    "Cost Breakdown": {
+      "purpose": "Cost driver by variant, so a total can be decomposed without opening a commodity sheet.",
+      "identity_columns": ["Cost Driver"],
+      "value_columns": "@variants",
+      "number_format": "currency",
+      "total_row": true,
+      "_comment": "Drivers are taken from the components the engine actually produced, in definition order. ICC/REJ/O&H/PROFIT appear here as ordinary drivers rather than as an unlabelled trailing block."
+    },
+
+    "@commodity_sheets": {
+      "purpose": "One sheet per commodity profile that produced rows. Generated, never hard-coded.",
+      "naming": "title_case_profile",
+      "column_groups": [
+        { "name": "Identity", "columns": ["Customer No", "End Item", "Supplier", "Desc", "Type", "Commodity"] },
+        { "name": "Input", "source": "@input_fields" },
+        { "name": "Computed", "source": "@component_fields", "number_format": "currency" },
+        { "name": "Result", "columns": ["Total", "Calculation Status"] }
+      ],
+      "total_row": true,
+      "status_column": true
+    },
+
+    "Validation": {
+      "purpose": "Every issue raised, addressable to the exact line and field.",
+      "columns": ["Line", "Customer No", "Profile", "Step", "Code", "Message", "Table", "Field", "Lookup Key"],
+      "empty_message": "No validation issues were raised for this run.",
+      "_comment": "Codes are the engine's own (MISSING_MASTER, MISSING_MASTER_FIELD, INVALID_INPUT, CALCULATION_ERROR). Legacy had no equivalent sheet; this is new capability, not a migration."
+    },
+
+    "Provenance": {
+      "purpose": "What configuration produced these numbers.",
+      "layout": "key_value",
+      "rows": [
+        { "label": "Definition SHA-256", "source": "@definition_sha256" },
+        { "label": "Master data version", "source": "@master_version" },
+        { "label": "Master SHA-256", "source": "@master_sha256" },
+        { "label": "Input SHA-256", "source": "@input_sha256" },
+        { "label": "Engine", "source": "@engine_version" }
+      ]
+    }
+  },
+
+  "excluded_by_design": {
+    "_comment": [
+      "Legacy behaviours deliberately NOT reproduced in the native output, each with a reason.",
+      "Listed so the omissions are decisions on record rather than gaps."
+    ],
+    "amber_total_rows": "Legacy marked totals with #FFC000 fill. CostOptima uses its own total style.",
+    "3dx_annotation_block": "Legacy wrote 'Extra Information for 3DX format suitability' as a free-text block on some sheets. Superseded by labelled columns; re-add only if a 3DX export is independently required.",
+    "live_excel_formulas": "Legacy emitted =SUM/=VLOOKUP/=SUMPRODUCT so the workbook recalculated itself. CostOptima computes in the engine and writes values, which keeps the workbook consistent with the stored snapshot. Needs Confirmation if any downstream consumer edits the workbook and expects recalculation.",
+    "intermediate_workbooks": "Legacy wrote ~40 Intermediate*.xlsx scratch files. Internal to its file-based pipeline; the database runtime has no equivalent need.",
+    "sbc_two_row_header": "Legacy's SBC carried variant codes above marketing names. The code-to-name mapping is not present in any supplied file - Needs Confirmation. A single labelled header row is used instead."
+  }
+}

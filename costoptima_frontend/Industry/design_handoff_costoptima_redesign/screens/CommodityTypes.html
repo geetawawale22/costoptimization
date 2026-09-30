@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="CostOptima — Commodity Types" description="PCM Master hierarchy: commodity > category workbook tables" -->
+<helmet><script src="./ds-base.js"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"></helmet>
+<div data-screen-label="Commodity Types" style="display:flex;min-height:100vh;background:#F7F8FA;font-family:'Manrope',system-ui,sans-serif;color:#1C2430">
+<aside style="width:240px;flex-shrink:0;background:#182430;color:#9AA7B7;padding:20px 14px;display:flex;flex-direction:column;gap:2px;overflow-y:auto">
+<div style="display:flex;align-items:center;gap:10px;padding:6px 10px 20px;color:#fff;font-weight:800;font-size:16px"><span style="width:30px;height:30px;border-radius:9px;background:#3E6E8E;display:flex;align-items:center;justify-content:center;font-size:13px">▦</span>CostOptima</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">☰ Calculations</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">＋ New Calculation</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⛁ Masters</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">▤ PDF Convertor</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;color:#fff;background:rgba(255,255,255,.08)">◈ Commodity Types</div>
+<div style="padding:2px 12px 2px 34px;display:flex;flex-direction:column;gap:2px">
+<div style="padding:8px 10px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.06)">PCM Master</div>
+<div style="padding:2px 0 2px 14px;display:flex;flex-direction:column;gap:2px">
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700;color:#fff">◇ Forging</div>
+<div style="padding:6px 10px 6px 22px;border-radius:8px;font-size:12px;font-weight:600;color:#fff;background:rgba(255,255,255,.05)">Process Master</div>
+<div style="padding:6px 10px 6px 22px;border-radius:8px;font-size:12px;font-weight:600;color:#8794A6">Material Master</div>
+<div style="padding:6px 10px 6px 22px;border-radius:8px;font-size:12px;font-weight:600;color:#8794A6">Non Std BOP</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6;margin-top:2px">◇ Casting</div>
+<div style="padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:#8794A6">◇ Sheet Metal</div>
+</div>
+</div>
+<div style="margin-top:16px;padding:4px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#5A6878;font-weight:700">Data</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⛓ Master Rate Data</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⇩ Outputs</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">↻ History</div>
+<div style="margin-top:16px;padding:4px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#5A6878;font-weight:700">System</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">⚙ Settings</div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;color:#9AA7B7">◍ Profile</div>
+</aside>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="height:64px;flex-shrink:0;background:#fff;border-bottom:1px solid #E4E7EC;display:flex;align-items:center;padding:0 32px"><div style="font-size:12.5px;color:#6B7686;font-weight:600">Commodity Types / PCM Master / Forging / <b style="color:#1C2430">Process Master</b></div></div>
+<div style="flex:1;padding:32px 36px;overflow:auto">
+<h1 style="font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em">Forging — Process Master</h1>
+<p style="font-size:13.5px;color:#6B7686;margin:0 0 20px;font-weight:500">Primary master sheets for Forging. Files are never listed in the sidebar, only here on the page.</p>
+<div style="background:#fff;border:1px solid #E4E7EC;border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(20,30,45,.05)">
+<div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+<input placeholder="Search rows…" style="border:1px solid #E4E7EC;border-radius:10px;padding:9px 12px;font-size:13px;width:260px;background:#F7F8FA">
+<div style="display:flex;gap:10px">
+<button style="border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;border:1px solid #E4E7EC;background:#fff;color:#1C2430;cursor:pointer">⇧ Import</button>
+<button style="border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;border:1px solid #E4E7EC;background:#fff;color:#1C2430;cursor:pointer">⇩ Export</button>
+<button style="border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;background:#3E6E8E;border:1px solid #3E6E8E;color:#fff;cursor:pointer">＋ Add Row</button>
+</div>
+</div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+<thead><tr>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Process Step</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Machine</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Cycle Time (s)</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Rate / Hr</th>
+<th style="text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6B7686;font-weight:700;padding:10px 12px;border-bottom:1px solid #E4E7EC;white-space:nowrap">Actions</th>
+</tr></thead>
+<tbody>
+<tr><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">Heating</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">Induction Furnace</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">45</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">₹1,240</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap"><a href="#" style="color:#3E6E8E;font-weight:700;font-size:12px;margin-right:10px">Edit</a><a href="#" style="color:#C0392B;font-weight:700;font-size:12px">Delete</a></td></tr>
+<tr><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">Forging</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">2500T Press</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">18</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap">₹3,850</td><td style="padding:13px 12px;border-bottom:1px solid #F0F2F5;white-space:nowrap"><a href="#" style="color:#3E6E8E;font-weight:700;font-size:12px;margin-right:10px">Edit</a><a href="#" style="color:#C0392B;font-weight:700;font-size:12px">Delete</a></td></tr>
+<tr><td style="padding:13px 12px;white-space:nowrap">Trimming</td><td style="padding:13px 12px;white-space:nowrap">Trim Press</td><td style="padding:13px 12px;white-space:nowrap">8</td><td style="padding:13px 12px;white-space:nowrap">₹960</td><td style="padding:13px 12px;white-space:nowrap"><a href="#" style="color:#3E6E8E;font-weight:700;font-size:12px;margin-right:10px">Edit</a><a href="#" style="color:#C0392B;font-weight:700;font-size:12px">Delete</a></td></tr>
+</tbody></table></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;font-size:12.5px;color:#6B7686;font-weight:600">Showing 3 of 42<div style="display:flex;gap:6px"><button style="width:30px;height:30px;border-radius:8px;border:1px solid #E4E7EC;background:#fff">‹</button><button style="width:30px;height:30px;border-radius:8px;border:1px solid #E4E7EC;background:#fff">›</button></div></div>
+</div>
+</div>
+</div>
+</div>
+
+</x-dc>
+</body>
+</html>

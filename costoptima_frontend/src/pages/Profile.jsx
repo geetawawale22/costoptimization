@@ -1,5 +1,6 @@
-import { useAuth } from '../context/AuthContext'
-import { usePageCrumb } from '../components/Layout'
+import React from 'react'
+import { useAuth } from '../auth/AuthContext'
+import { usePageCrumb } from '../layouts/ProtectedLayout'
 
 const ACTION_LABELS = {
   create: 'Create',
@@ -18,7 +19,7 @@ export default function Profile() {
   usePageCrumb('Profile')
   const { user, permissions } = useAuth()
 
-  const initials = user?.name ? user.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase() : '?'
+  const initials = user?.name ? user.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase() : ''
   const roleName = user?.role?.name || 'No role assigned'
   const permissionGroups = permissions.reduce((groups, permission) => {
     const resource = permission.resource || 'general'
@@ -95,7 +96,7 @@ export default function Profile() {
               </div>
               <div>
                 <span>Profile</span>
-                <strong>{user?.email ? 'Verified' : 'Incomplete'}</strong>
+                <strong>{user?.email ? 'Configured' : 'Incomplete'}</strong>
               </div>
               <div>
                 <span>Role Assignment</span>

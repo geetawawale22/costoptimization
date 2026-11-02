@@ -1,14 +1,15 @@
+import React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import HelpModal from './modals/HelpModal'
+import { useAuth } from '../auth/AuthContext'
 
 export default function Topbar({ crumb }) {
   const { user, logout } = useAuth()
+  const [logoutError, setLogoutError] = useState('')
+  async function signOut() { try { await logout() } catch (error) { setLogoutError(error.message) } }
   const [open, setOpen] = useState(false)
-  const [helpOpen, setHelpOpen] = useState(false)
   const menuRef = useRef(null)
-  const initials = user?.name ? user.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase() : '?'
+  const initials = user?.name ? user.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase() : ''
 
   useEffect(() => {
     function closeOnOutsideClick(event) {
@@ -31,13 +32,12 @@ export default function Topbar({ crumb }) {
 
   return (
     <div className="topbar">
-      <div className="crumb" dangerouslySetInnerHTML={{ __html: crumb || '' }} />
+      <div className="crumb" aria-label="Breadcrumb">{String(crumb||'Workspace').replace(/<[^>]*>/g,'').split(' / ').map((part,index,parts)=><React.Fragment key={index}>{index>0&&<span className="crumb-separator" aria-hidden="true">/</span>}{index===parts.length-1?<strong>{part}</strong>:<span>{part}</span>}</React.Fragment>)}</div>
+      {logoutError && <p role="alert">{logoutError}</p>}
       <div className="topbar-right">
-        <input className="search-box" placeholder="Search calculations, masters, files..." />
         <span className="chip blue" title="Signed in role">{user?.role?.name || 'No role'}</span>
-        <button className="icon-btn" type="button" title="Help" aria-label="Help" onClick={() => setHelpOpen(true)}>?</button>
         <div className="profile-menu-wrap" ref={menuRef}>
-          <button className="avatar avatar-button" title="Open profile" onClick={() => setOpen((value) => !value)} type="button">
+          <button className="avatar avatar-button" title="Open profile" aria-label="Open profile" onClick={() => setOpen((value) => !value)} type="button">
             {initials}
           </button>
           {open && (
@@ -59,13 +59,12 @@ export default function Topbar({ crumb }) {
               </div>
               <div className="profile-popover-actions">
                 <Link className="btn secondary" to="/profile" onClick={() => setOpen(false)}>View Profile</Link>
-                <button className="btn danger" type="button" onClick={logout}>Logout</button>
+                <button className="btn danger" type="button" onClick={signOut}>Logout</button>
               </div>
             </div>
           )}
         </div>
       </div>
-      {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
     </div>
   )
 }

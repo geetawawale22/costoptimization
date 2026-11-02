@@ -1,3 +1,4 @@
+import React from 'react'
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 const ConfirmContext = createContext(null)
@@ -25,9 +26,9 @@ export function ConfirmProvider({ children }) {
 
   useEffect(() => {
     if (!state) return
-    const onKeyDown = (event) => event.key === 'Escape' && close(false)
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
+    const onKeyDown = (event) => { if(event.key === 'Escape'){event.stopImmediatePropagation();close(false)} }
+    document.addEventListener('keydown', onKeyDown, true)
+    return () => document.removeEventListener('keydown', onKeyDown, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
 

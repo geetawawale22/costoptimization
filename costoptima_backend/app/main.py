@@ -1,100 +1,96 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
-from app.database import Base, engine, ensure_schema_columns
-from app import models  # noqa: F401 — registers all models on Base.metadata
-from app.config import settings
-import logging
-import os
-import sys
-import traceback
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from app.routers import auth, users, workbooks, commodity_config, boms, calculations, misc, pdf_converter, app_config
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from app.config import get_settings
+from app.api import auth, users, access, settings
 
-def _configure_logging():
-    log_path = os.path.abspath(os.path.join(settings.LOG_DIR, settings.LOG_FILE))
-    formatter = logging.Formatter("%(asctime)s %(levelname)s [%(name)s] %(message)s")
-    root = logging.getLogger()
-    root.setLevel(logging.INFO)
-
-    if not any(getattr(handler, "_costoptima_console", False) for handler in root.handlers):
-        console = logging.StreamHandler(sys.stdout)
-        console.setFormatter(formatter)
-        console._costoptima_console = True
-        root.addHandler(console)
-
-    if not any(getattr(handler, "_costoptima_file", None) == log_path for handler in root.handlers):
-        file_handler = logging.FileHandler(log_path, encoding="utf-8")
-        file_handler.setFormatter(formatter)
-        file_handler._costoptima_file = log_path
-        root.addHandler(file_handler)
-
-    logging.getLogger("costoptima").info("Logging initialized. Terminal logging enabled. Log file: %s", log_path)
+from contextlib import asynccontextmanager
+from app.observability import technical
 
 
-_configure_logging()
-logger = logging.getLogger("costoptima")
-app = FastAPI(
-    title="CostOptima API",
-    description="CostOptima — modernized cost-calculation backend replacing the "
-                "Excel/SharePoint-based cost calculation workflow. "
-                "Session-cookie authentication; calculations run synchronously on demand.",
-    version="1.0.0",
-)
+@asynccontextmanager
+async def lifespan(app):
+    from app.audit import signing_key
+    signing_key()
+    technical("application.startup")
+    try:
+        yield
+    finally:
+        technical("application.shutdown")
 
-# allow_credentials=True requires explicit origins (not "*") so the browser will
-# send/accept the session cookie cross-origin. allow_origin_regex additionally accepts
-# any localhost/127.0.0.1/LAN-IP origin on any port, so accessing the app from another
-# machine on the network (e.g. http://192.168.1.5:5173) works without editing
-# FRONTEND_ORIGIN per client. Tighten this regex before deploying outside a LAN.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[settings.FRONTEND_ORIGIN],
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1|(\d{1,3}\.){3}\d{1,3})(:\d+)?",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-@app.on_event("startup")
-def on_startup():
-    Base.metadata.create_all(bind=engine)
-    ensure_schema_columns()
+app = FastAPI(title="Cost Pilot", lifespan=lifespan)
 
-@app.exception_handler(TypeError)
-async def type_error_handler(request: Request, exc: TypeError):
-    """Converts an uncaught TypeError — almost always a pydantic response-serialization
-    edge case where a field declared `int` actually holds a `float` somewhere in the
-    response — into a clean JSON 500 naming the exact request path, instead of letting
-    the ASGI connection die mid-response (which is what shows up in the browser as the
-    unhelpful "Failed to fetch" rather than a real error). Full traceback is still
-    logged server-side so the exact model/field can be pinpointed."""
-    logger.error("Unhandled TypeError on %s %s:\n%s", request.method, request.url.path, traceback.format_exc())
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error_code": "internal_type_error",
-            "message": f"Internal error handling {request.method} {request.url.path}. "
-                       f"Please share this path plus the server console output.",
-            "path": str(request.url.path),
-        },
-    )
 
-app.include_router(auth.sso_redirect_router)
+@app.middleware("http")
+async def secure_requests(request: Request, call_next):
+    if request.url.path.startswith("/api") and request.url.path not in {"/api/auth/sso/callback", "/sso"} and request.method not in {"GET", "HEAD", "OPTIONS"}:
+        if request.headers.get("origin", "") not in get_settings().origins or request.headers.get("x-costoptima-request") != "1":
+            return JSONResponse(status_code=403, content={"detail": "Untrusted request origin or missing request header"})
+        if request.method in {"POST", "PUT", "PATCH"} and request.url.path != "/api/auth/logout" and request.headers.get("content-type", "").split(";", 1)[0].lower() not in ({"application/x-www-form-urlencoded"} if request.url.path == "/api/auth/login" else {"multipart/form-data"} if (request.url.path.startswith("/api/sources/") and request.url.path.endswith("/import/preview")) or request.url.path in {"/api/calculations/development/runs", "/api/converters/ftg/process"} else {"application/json"}):
+            return JSONResponse(status_code=415, content={"detail": "Use application/json"})
+    if request.url.path in {"/api/auth/sso/callback", "/api/auth/sso/login", "/sso"}:
+        from urllib.parse import parse_qsl, urlencode, unquote
+        raw_query = request.scope.get("query_string", b"").decode("utf-8", errors="replace")
+        values = dict(parse_qsl(raw_query, keep_blank_values=True))
+        # Original CC Services opaque tokens may contain literal plus signs.
+        for pair in raw_query.split("&"):
+            key, separator, value = pair.partition("=")
+            if separator and unquote(key) in auth.TOKEN_KEYS:
+                values[unquote(key)] = unquote(value)
+        request.state.sso_query = values
+        request.scope["query_string"] = urlencode({k: v for k, v in values.items() if k not in auth.TOKEN_KEYS}).encode()
+    response = await call_next(request)
+    if request.url.path.startswith("/api"):
+        response.headers["Cache-Control"] = "no-store"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "same-origin"
+    return response
+
+
+@app.exception_handler(IntegrityError)
+async def conflict(request: Request, exc):
+    from app.audit import context
+    technical("database.conflict", request_id=context().get("request_id"), error_category=type(exc).__name__)
+    return JSONResponse(status_code=409, content={"detail": "This change conflicts with an existing record"})
+
+
+@app.exception_handler(SQLAlchemyError)
+async def database_error(request: Request, exc):
+    from app.audit import context
+    technical("database.error", request_id=context().get("request_id"), error_category=type(exc).__name__)
+    return JSONResponse(status_code=503, content={"detail": "Database operation unavailable. No automatic retry was performed."})
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
 app.include_router(auth.router)
 app.include_router(users.router)
-app.include_router(workbooks.router)
-app.include_router(commodity_config.router)
-app.include_router(boms.router)
-app.include_router(calculations.router)
-app.include_router(misc.router)
-app.include_router(pdf_converter.router)
-app.include_router(app_config.router)
+app.include_router(access.router)
+app.include_router(settings.router)
+app.include_router(settings.config_router)
+# Original CC Services callback alias; one shared callback implementation.
+app.add_api_route("/sso", auth.sso_callback, methods=["GET", "POST"], include_in_schema=False)
 
 
-@app.get("/", tags=["Health"])
-def root():
-    return {"status": "ok", "service": "CostOptima API", "docs": "/docs"}
+# Added last so tracing surrounds origin checks and all API handlers.
+from app.observability import RequestTracing, technical
+from app.api import audit as audit_api
+app.include_router(audit_api.router)
+app.add_middleware(RequestTracing)
 
 
+from app.api import masters as master_api
+app.include_router(master_api.router)
+
+from app.api import calculations as calculation_api
+app.include_router(calculation_api.router)
+
+from app.api import formulas as formulas_api
+app.include_router(formulas_api.router)
+
+from app.api import converters as converters_api
+app.include_router(converters_api.router)

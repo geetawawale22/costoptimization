@@ -1,116 +1,27 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import * as calcApi from '../api/calculations'
-import { downloadBlob } from '../api/client'
-import { usePageCrumb } from '../components/Layout'
-import { useAuth } from '../context/AuthContext'
-import { useConfirm } from '../context/ConfirmContext'
-import { useToast } from '../context/ToastContext'
+import React, {useEffect, useState} from 'react'
+import {Link} from 'react-router-dom'
+import {request} from '../services/api'
+import {useAuth} from '../auth/AuthContext'
+import {usePageCrumb} from '../layouts/ProtectedLayout'
+import {CALCULATION_BASE as BASE, dateBoundary, downloadCalculation, localDate, runCounts, safeError, statusLabel} from '../services/calculations'
+import Pagination from '../components/Pagination'
 import StatusChip from '../components/StatusChip'
-
-export default function Calculations() {
-  usePageCrumb('Calculations')
-  const { can } = useAuth()
-  const confirm = useConfirm()
-  const showToast = useToast()
-  const [calculations, setCalculations] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  function loadCalculations() {
-    setLoading(true)
-    calcApi
-      .listCalculations()
-      .then(setCalculations)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false))
-  }
-
-  useEffect(() => {
-    loadCalculations()
-  }, [])
-
-  async function handleDeleteAll() {
-    if (!(await confirm({ title: 'Delete All Calculations', message: 'Delete all calculations? This cannot be undone.' }))) return
-    await calcApi.deleteAllCalculations()
-    loadCalculations()
-  }
-
-  async function handleDownloadAll() {
-    try {
-      const blob = await calcApi.exportAllCalculations()
-      downloadBlob(blob, 'calculations.xlsx')
-    } catch (err) {
-      showToast(err.message)
-    }
-  }
-
-  return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 className="page-title">Calculations</h1>
-          <p className="page-sub">Every calculation runs immediately on demand — no queued/running state to wait through.</p>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn" disabled={calculations.length === 0} onClick={handleDownloadAll}>
-            ⬇ Download
-          </button>
-          <button className="btn" disabled={!can('calculations', 'delete') || calculations.length === 0}
-                  title={!can('calculations', 'delete') ? 'Not permitted for your role' : ''}
-                  onClick={handleDeleteAll}>
-            Delete All
-          </button>
-        <Link
-          to="/new-calculation"
-          className="btn primary"
-          style={!can('calculations', 'create') ? { pointerEvents: 'none', opacity: 0.45 } : {}}
-          title={!can('calculations', 'create') ? 'Not permitted for your role' : ''}
-        >
-          ＋ New Calculation
-        </Link>
-        </div>
-      </div>
-
-      <div className="card">
-        {loading && <div className="loading">Loading calculations...</div>}
-        {error && <p className="validation-err">{error}</p>}
-        {!loading && !error && (
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Calc ID</th>
-                  <th>BOM</th>
-                  <th>Status</th>
-                  <th>Started</th>
-                  <th>Completed</th>
-                  <th>Commodities</th>
-                </tr>
-              </thead>
-              <tbody>
-                {calculations.length === 0 && (
-                  <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: 'var(--text-muted)' }}>
-                      No calculations yet — start one from "New Calculation".
-                    </td>
-                  </tr>
-                )}
-                {calculations.map((c) => (
-                  <tr key={c.id}>
-                    <td>CALC-{String(c.id).padStart(4, '0')}</td>
-                    <td>BOM #{c.bom_id}</td>
-                    <td><StatusChip value={c.status} /></td>
-                    <td>{c.started_at ? new Date(c.started_at).toLocaleString() : '—'}</td>
-                    <td>{c.completed_at ? new Date(c.completed_at).toLocaleString() : '—'}</td>
-                    <td>{c.commodity_results.length}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </>
-  )
+const EMPTY={q:'',status:'',date_from:'',date_to:'',sort:'created_desc'}
+export default function Calculations(){
+ usePageCrumb('Workspace / <b>Calculations</b>')
+ const {can,user}=useAuth(),[filters,setFilters]=useState(EMPTY),[applied,setApplied]=useState(EMPTY),[page,setPage]=useState(1),[history,setHistory]=useState(null),[busy,setBusy]=useState(true),[error,setError]=useState(''),[downloading,setDownloading]=useState('')
+ async function load(nextPage=page,values=applied){setBusy(true);setError('');try{const data=await request(BASE+'/runs',{params:{...values,date_from:dateBoundary(values.date_from),date_to:dateBoundary(values.date_to,true),page:nextPage,page_size:15}});setHistory(data);setPage(nextPage);setApplied(values)}catch(e){setError(safeError(e))}finally{setBusy(false)}}
+ useEffect(()=>{load(1,EMPTY)},[])
+ function update(key,value){setFilters(current=>({...current,[key]:value}))}
+ async function download(item){setDownloading(item.run_id);setError('');try{await downloadCalculation(item.run_id,item.input_name)}catch(e){setError(safeError(e))}finally{setDownloading('')}}
+ return <div className="page-stack calculations-history"><header className="page-heading"><div><h1 className="page-title">Calculations</h1><p className="page-sub">Review previous calculations, explore results and download your Excel reports.</p></div>{can('boms','create')&&<Link className="btn primary" to="/calculations/new"><span aria-hidden="true">+</span> New Calculation</Link>}</header>
+  {error&&<p className="notice error" role="alert">{error}</p>}
+  <section className="card"><form className="filter-bar" onSubmit={e=>{e.preventDefault();load(1,filters)}}><label className="grow">Search<input aria-label="Search calculations" placeholder="Calculation ID, filename, project or part" value={filters.q} onChange={e=>update('q',e.target.value)}/></label><label>Status<select value={filters.status} onChange={e=>update('status',e.target.value)}><option value="">All statuses</option><option value="calculated">Calculated</option><option value="partial">Partial</option><option value="unverified">Needs review</option></select></label><label>From<input type="date" value={filters.date_from} onChange={e=>update('date_from',e.target.value)}/></label><label>To<input type="date" min={filters.date_from||undefined} value={filters.date_to} onChange={e=>update('date_to',e.target.value)}/></label><label>Sort by<select value={filters.sort} onChange={e=>update('sort',e.target.value)}><option value="created_desc">Newest first</option><option value="created_asc">Oldest first</option><option value="name_asc">Filename A-Z</option><option value="name_desc">Filename Z-A</option><option value="status_asc">Status</option></select></label><div className="action-row"><button className="btn" disabled={busy}>Apply</button><button type="button" className="btn secondary" disabled={busy} onClick={()=>{setFilters(EMPTY);load(1,EMPTY)}}>Reset</button></div></form>
+  <div className="list-header-row"><span className="list-meta">{history?.total??0} calculations</span><button className="text-button" disabled={busy} onClick={()=>load()}>Refresh</button></div>
+  {busy?<div className="loading" role="status">Loading calculations...</div>:<div className="table-scroll"><table className="business-table history-table"><thead><tr><th>Calculation ID</th><th>Input / project</th><th>Uploaded</th><th>Uploaded by</th><th>Total</th><th>Calculated</th><th>Partial</th><th>Incomplete</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+   {history?.items.map(item=>{const counts=runCounts(item);return <tr key={item.run_id}><td><Link className="table-link" to={`/calculations/${item.run_id}`} title={item.run_id}>{item.run_id.slice(0,12)}</Link></td><td className="filename-cell"><strong>{item.input_name}</strong><small className="cell-sub">{item.project||item.part_name||'Not specified'}</small></td><td className="nowrap">{localDate(item.created_at)}</td><td>{item.uploaded_by||user?.name||'Your account'}</td><td>{counts.total}</td><td>{counts.calculated}</td><td>{counts.partial}</td><td>{counts.blocked+counts.unverified+counts.error}</td><td><StatusChip value={statusLabel(item.status)}/></td><td><div className="table-actions"><Link className="row-action-btn" to={`/calculations/${item.run_id}`}>View Results</Link><Link className="row-action-btn" to={`/calculations/${item.run_id}?tab=preview`}>Preview Excel</Link><button className="row-action-btn" disabled={downloading===item.run_id} onClick={()=>download(item)}>{downloading===item.run_id?'Downloading...':'Download Excel'}</button><Link className="row-action-btn" to={`/calculations/${item.run_id}?tab=issues`}>View Issues</Link></div></td></tr>})}
+   {!history?.items.length&&<tr><td colSpan={10} className="empty-row"><div className="empty-state-box"><strong>No calculations found</strong><span>{applied.q||applied.status||applied.date_from||applied.date_to?'Try different filters.':'Start a new calculation to review your costs and create an Excel report.'}</span>{can('boms','create')&&<Link className="btn primary" to="/calculations/new">+ New Calculation</Link>}</div></td></tr>}
+  </tbody></table></div>}
+  <Pagination page={page} pageSize={15} total={history?.total||0} totalPages={Math.ceil((history?.total||0)/15)} onPageChange={next=>load(next)}/>
+ </section></div>
 }

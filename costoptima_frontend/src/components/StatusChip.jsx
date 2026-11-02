@@ -1,9 +1,2 @@
-export default function StatusChip({ value }) {
-  const v = String(value)
-  let cls = 'gray'
-  if (['Completed', 'Success', 'Active', 'Valid', 'Yes', 'Passed'].includes(v)) cls = 'green'
-  else if (['Running', 'Info', 'Queued'].includes(v)) cls = 'blue'
-  else if (['Failed', 'Error', 'Invalid', 'No'].includes(v)) cls = 'red'
-  else if (['Warning', 'Needs Review', 'Pending'].includes(v)) cls = 'amber'
-  return <span className={`chip ${cls}`}>{v}</span>
-}
+import React from 'react'
+export default function StatusChip({value}) { const text=String(value||'Not available'),v=text.toLowerCase();let cls='gray';if(['completed','success','active','valid','yes','passed','calculated','verified'].includes(v))cls='green';else if(['running','info','queued','attempt','observed'].includes(v))cls='blue';else if(['failed','failure','error','invalid','no','denied','incomplete','blocked'].includes(v))cls='red';else if(['warning','needs review','pending','partial','unverified'].includes(v))cls='amber';return <span className={`chip ${cls}`}>{text}</span> }

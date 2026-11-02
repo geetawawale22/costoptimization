@@ -1,147 +1,29 @@
-import { useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
-import { COMMODITY_STRUCTURE, categoryLabel, MASTERS_PAGES, SETTINGS_PAGES, PCM_MASTER_CODE } from '../config/commodityStructure'
-import { useAuth } from '../context/AuthContext'
- 
-function NavItem({ to, icon, label, hasChildren, open, onToggle, active = false }) {
-  const chevron = hasChildren && (
-    <span
-      className={`chev ${open ? 'open' : ''}`}
-      onClick={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        onToggle()
-      }}
-    >
-      ▶
-    </span>
-  )
- 
-  if (to) {
-    return (
-      <NavLink to={to} className={({ isActive }) => `nav-item${isActive || active ? ' active' : ''}`} title={label}>
-        <span className="ic">{icon}</span>
-        <span className="nav-label">{label}</span>
-        {chevron}
-      </NavLink>
-    )
-  }
-  // Pure group header (Masters / Commodity Types / Settings) — no route, toggles only.
-  return (
-    <div className={`nav-item${active ? ' active' : ''}`} onClick={onToggle} title={label}>
-      <span className="ic">{icon}</span>
-      <span className="nav-label">{label}</span>
-      {chevron}
-    </div>
-  )
+import React, {useEffect, useState} from 'react'
+import {NavLink, useLocation} from 'react-router-dom'
+import {useAuth} from '../auth/AuthContext'
+export function SidebarIcon({name}) {
+ const shapes={
+  calculator:<><rect x="4" y="2" width="16" height="20" rx="3"/><path d="M8 6h8M8 11h1m6 0h1m-8 4h1m6 0h1m-8 4h1m6 0h1"/></>,
+  data:<><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></>,
+  exchange:<><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></>,
+  activity:<><path d="M3 12h4l3-8 4 16 3-8h4"/></>,
+  formula:<><path d="M18 3h-7l-4 18M5 8h11M13 13l7 7m0-7-7 7"/></>,
+  users:<><circle cx="9" cy="7" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M17 4a3 3 0 0 1 0 6m1 5a5 5 0 0 1 3 5"/></>,
+  shield:<><path d="m12 2 8 4v6c0 5-8 10-8 10S4 17 4 12V6Z"/><path d="m8 12 3 3 5-6"/></>,
+  settings:<><path d="m9 3-1 3-3 1v4l2 1-2 2 2 4 3-1 2 3 3-2v-3l4-1 1-4-3-2V4l-4-2-2 2Z"/><circle cx="12" cy="11" r="3"/></>,
+  profile:<><circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></>,
+  chevron:<path d="m9 5 7 7-7 7"/>,collapse:<path d="m15 5-7 7 7 7"/>,expand:<path d="m8 5 7 7-7 7"/>,pilot:<><path d="m3 11 18-8-8 18-2-8Z"/><path d="m11 13 10-10"/></>
+ }
+ return <svg className="sidebar-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{shapes[name]||shapes.pilot}</svg>
 }
- 
-export default function Sidebar() {
-  const location = useLocation()
-  const { can } = useAuth()
-  const [expanded, setExpanded] = useState(new Set(['commodityTypes', 'pcmMaster']))
-  const canViewConverters = can('outputs', 'view')
-  const converterActive = location.pathname.startsWith('/pdf-converter')
-    || location.pathname.startsWith('/converter/ftg-fixture-input-to-rpa')
-    || location.pathname.startsWith('/converter/ftg-fixture-ppt-to-input-excel')
-  const converterOpen = expanded.has('converter') || converterActive
- 
-  const toggle = (key) => {
-    setExpanded((prev) => {
-      const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
-      return next
-    })
-  }
- 
-  return (
-    <div className="sidebar">
-      <div className="brand">
-        <div className="brand-icon">▦</div>
-        <div className="brand-text">
-          <b>CostOptima</b>
-          <span>Cost Management</span>
-        </div>
-      </div>
- 
-      <div className="nav-tree">
-        <NavItem to="/calculations" icon="☰" label="Calculations" />
-        <NavItem to="/new-calculation" icon="＋" label="New Calculation" />
-        <NavItem hasChildren icon="⛁" label="Masters" open={expanded.has('masters')} onToggle={() => toggle('masters')} />
-        <div className="nav-children lvl1" style={{ display: expanded.has('masters') ? 'block' : 'none' }}>
-          {MASTERS_PAGES.map((m) => (
-            <NavItem key={m.code} to={`/masters/${m.code}`} icon="▫" label={m.label} />
-          ))}
-        </div>
-        {canViewConverters && (
-          <>
-            <NavItem
-              hasChildren
-              icon="▤"
-              label="Converter"
-              open={converterOpen}
-              active={converterActive}
-              onToggle={() => toggle('converter')}
-            />
-            <div className="nav-children lvl1" style={{ display: converterOpen ? 'block' : 'none' }}>
-              <NavItem to="/pdf-converter" icon="▫" label="PDF Converter" />
-              <NavItem to="/converter/ftg-fixture-input-to-rpa" icon="▫" label="FTG Fixture - Input to RPA" />
-              <NavItem to="/converter/ftg-fixture-ppt-to-input-excel" icon="▫" label="FTG Fixture - PPT to Input Excel" />
-            </div>
-          </>
-        )}
-
-        {/* Commodity Types -> PCM Master (its own page + parent grouping node) -> each commodity -> its categories */}
-        <NavItem
-          hasChildren
-          icon="◈"
-          label="Commodity Types"
-          open={expanded.has('commodityTypes')}
-          onToggle={() => toggle('commodityTypes')}
-        />
-        <div className="nav-children lvl1" style={{ display: expanded.has('commodityTypes') ? 'block' : 'none' }}>
-          <NavItem
-            to={`/commodity-types/${PCM_MASTER_CODE}`}
-            icon="▦"
-            label="PCM Master"
-            hasChildren
-            open={expanded.has('pcmMaster')}
-            onToggle={() => toggle('pcmMaster')}
-          />
-          <div className="nav-children lvl2" style={{ display: expanded.has('pcmMaster') ? 'block' : 'none' }}>
-            {COMMODITY_STRUCTURE.map((c) => {
-              const nodeKey = `commodity-${c.code}`
-              return (
-                <div key={c.code}>
-                  <NavItem hasChildren icon="◇" label={c.name} open={expanded.has(nodeKey)} onToggle={() => toggle(nodeKey)} />
-                  <div className="nav-children lvl2" style={{ display: expanded.has(nodeKey) ? 'block' : 'none' }}>
-                    {c.categories.map((cat) => (
-                      <NavItem
-                        key={cat}
-                        to={`/commodity-types/${c.code}/${cat}`}
-                        icon={cat === 'self' ? '▦' : '•'}
-                        label={categoryLabel(cat, c.name)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </div>
- 
-      <div className="nav-bottom">
-        <NavItem to="/history" icon="↻" label="History" />
-        <NavItem hasChildren icon="⚙" label="Settings" open={expanded.has('settings')} onToggle={() => toggle('settings')} />
-        <div className="nav-children lvl1" style={{ display: expanded.has('settings') ? 'block' : 'none' }}>
-          {SETTINGS_PAGES.map((s) => (
-            <NavItem key={s.key} to={`/settings/${s.key}`} icon="▫" label={s.label} />
-          ))}
-        </div>
- 
-        <NavItem to="/profile" icon="◍" label="Profile" />
-      </div>
-    </div>
-  )
+function Item({to,icon,label}){return <NavLink to={to} className={({isActive})=>`nav-item${isActive?' active':''}`} title={label}><span className="ic"><SidebarIcon name={icon}/></span><span className="nav-label">{label}</span></NavLink>}
+export default function Sidebar({collapsed,onToggleCollapse}){
+ const {can}=useAuth(),location=useLocation(),[open,setOpen]=useState(location.pathname.startsWith('/settings')||location.pathname==='/formula-management')
+ useEffect(()=>{if(location.pathname.startsWith('/settings')||location.pathname==='/formula-management')setOpen(true)},[location.pathname])
+ const admin=can('users','view')||can('roles','view')||can('settings','view')
+ return <aside className={`sidebar${collapsed?' collapsed':''}`} aria-label="Sidebar"><LinkBrand/><button className="sidebar-toggle" type="button" onClick={onToggleCollapse} title={collapsed?'Expand sidebar':'Collapse sidebar'} aria-label={collapsed?'Expand sidebar':'Collapse sidebar'} aria-expanded={!collapsed} aria-controls="primary-navigation"><SidebarIcon name={collapsed?'expand':'collapse'}/><span className="nav-label">Collapse sidebar</span></button><nav id="primary-navigation" className="sidebar-scroll" aria-label="Main navigation"><div className="nav-section-label">Workspace</div><div className="nav-tree">
+ {can('boms','view')&&<Item to="/calculations" icon="calculator" label="Calculations"/>}{can('masters','view')&&<Item to="/masters" icon="data" label="Master Data"/>}{can('converters','view')&&<Item to="/ftg-converter" icon="exchange" label="FTG Converter"/>}{can('settings','view')&&<Item to="/activity-logs" icon="activity" label="Activity Logs"/>}
+ {admin&&<><div className="nav-section-label">Manage</div><button type="button" className="nav-item" onClick={()=>{if(collapsed){onToggleCollapse();setOpen(true)}else setOpen(!open)}} title="Administration" aria-expanded={open}><span className="ic"><SidebarIcon name="settings"/></span><span className="nav-label">Administration</span><span className={`chev${open?' open':''}`}><SidebarIcon name="chevron"/></span></button><div className="nav-children lvl1" style={{display:open?'block':'none'}}>{can('users','view')&&<Item to="/settings/users" icon="users" label="Users"/>}{can('roles','view')&&<Item to="/settings/roles-permissions" icon="shield" label="Roles & Permissions"/>}{can('settings','view')&&<><Item to="/formula-management" icon="formula" label="Formula Management"/><Item to="/settings/app-configuration" icon="settings" label="Application Settings"/></>}</div></>}
+ </div><div className="nav-bottom"><Item to="/profile" icon="profile" label="My Profile"/></div></nav><div className="sidebar-footer"><span className="nav-label">Cost Excellence, delivered.</span></div></aside>
 }
+function LinkBrand(){return <div className="brand"><div className="brand-icon"><SidebarIcon name="pilot"/></div><div className="brand-text"><b>Cost Pilot</b><span>Cost Excellence Delivered</span></div></div>}

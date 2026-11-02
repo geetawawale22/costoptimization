@@ -1,3 +1,4 @@
+import React from 'react'
 /**
  * Generic server-side pagination bar. Expects a PaginatedResponse-shaped object
  * ({ page, page_size, total, total_pages }) and calls onPageChange(nextPage) with a

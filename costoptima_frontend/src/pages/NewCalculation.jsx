@@ -1,223 +1,30 @@
-﻿import { useRef, useState } from 'react'
-import * as bomsApi from '../api/boms'
-import * as calcApi from '../api/calculations'
-import { downloadBlob } from '../api/client'
-import { usePageCrumb } from '../components/Layout'
-import { useToast } from '../context/ToastContext'
-import StatusChip from '../components/StatusChip'
-
-export default function NewCalculation() {
-  usePageCrumb('New Calculation')
-  const showToast = useToast()
-  const fileInputRef = useRef(null)
-
-  const [projectName, setProjectName] = useState('')
-  const [description, setDescription] = useState('')
-  const [email, setEmail] = useState('')
-
-  const [uploading, setUploading] = useState(false)
-  const [bom, setBom] = useState(null)
-  const [tabs, setTabs] = useState(null)
-  const [previewRows, setPreviewRows] = useState([])
-  const [validation, setValidation] = useState(null)
-
-  const [calculating, setCalculating] = useState(false)
-  const [calculation, setCalculation] = useState(null)
-
-  async function handleFileChange(e) {
-    const file = e.target.files[0]
-    if (!file) return
-    if (!projectName.trim() || !description.trim()) {
-      showToast('Complete calculation information before uploading a PCM file.')
-      e.target.value = ''
-      return
-    }
-    setUploading(true)
-    setCalculation(null)
-    setBom(null)
-    setTabs(null)
-    setPreviewRows([])
-    setValidation(null)
-    try {
-      const uploaded = await bomsApi.uploadBom(file, projectName)
-      setBom(uploaded)
-      setTabs(uploaded.tabs || [])
-      const [preview, checks] = await Promise.all([
-        bomsApi.previewBom(uploaded.id).catch(() => []),
-        bomsApi.validateBom(uploaded.id),
-      ])
-      setPreviewRows(preview || [])
-      setValidation(checks)
-    } catch (err) {
-      showToast(err.message)
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  async function handleCalculate() {
-    setCalculating(true)
-    try {
-      const finished = await calcApi.calculate(bom.id)
-      setCalculation(finished)
-    } catch (err) {
-      showToast(err.message)
-    } finally {
-      setCalculating(false)
-    }
-  }
-
-  async function handleDownloadOutput() {
-    try {
-      const blob = await calcApi.exportCalculation(calculation.id)
-      downloadBlob(blob, `calculation_${calculation.id}_output.xlsx`)
-    } catch (err) {
-      showToast(err.message)
-    }
-  }
-
-  const result = calculation?.result
-  const previewColumns = Array.from(new Set(previewRows.flatMap((r) => Object.keys(r.row_data || {}).filter((k) => !k.startsWith('_'))))).slice(0, 10)
-  const validationHasError = validation?.issues?.some((i) => i.status === 'Error')
-  const calculationInfoComplete = Boolean(projectName.trim() && description.trim())
-  const uploadComplete = calculationInfoComplete && Boolean(bom)
-  const validationComplete = uploadComplete && Boolean(validation) && !validationHasError
-  const calculationComplete = Boolean(result)
-  const uploadLocked = !calculationInfoComplete
-  const validationLocked = !uploadComplete
-  const calculateLocked = !validationComplete
-  const resultLocked = !calculationComplete
-
-  return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <h1 className="page-title">New Cost Calculation</h1>
-          <p className="page-sub">New PCM estimate</p>
-        </div>
-      </div>
-
-      <div className="stepper">
-        <div className="step">
-          <div className="step-num">1</div>
-          <div className="step-body">
-            <div className="step-title">Calculation Information</div>
-            <div className="card">
-              <div className="form-field"><label>Project Name <span className="required-mark">*</span></label><input value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="e.g. S302" required /></div>
-              <div className="form-field"><label>Description <span className="required-mark">*</span></label><input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter calculation notes..." required /></div>
-              <div className="form-field"><label>Notify Email (optional, not configured yet)</label><input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email will show Not configured until SMTP is configured" /></div>
-              {!calculationInfoComplete && <p className="step-help">Complete the required calculation information to continue.</p>}
-            </div>
-          </div>
-        </div>
-
-        <div className={`step ${uploadLocked ? 'locked' : ''}`}>
-          <div className="step-num">{uploadLocked ? '🔒' : '2'}</div>
-          <div className="step-body">
-            <div className="step-title">Upload PCM Input File</div>
-            <div className="card">
-              <label className={`dropzone ${uploadLocked ? 'disabled' : ''}`} style={{ display: 'block' }}>
-                {uploadLocked ? 'Complete Step 1 to upload a PCM file.' : uploading ? '⏳ Uploading, reading sheets, and preparing preview...' : '☁ Click to upload or drag and drop'}
-                <br />
-                <span style={{ fontSize: 11.5 }}>Original input workbook (.xlsx)</span>
-                <input ref={fileInputRef} type="file" accept=".xlsx" onChange={handleFileChange} style={{ display: 'none' }} disabled={uploadLocked || uploading} />
-              </label>
-
-              {tabs && (
-                <div style={{ marginTop: 16 }}>
-                  <p style={{ fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 8 }}>Detected workbook sheets:</p>
-                  {tabs.map((t) => <span className="commodity-pill" key={t.id}>✓ {t.detected_sheet_name}</span>)}
-                </div>
-              )}
-
-              {previewRows.length > 0 && (
-                <div className="table-scroll" style={{ marginTop: 16 }}>
-                  <p style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Input preview (first rows):</p>
-                  <table>
-                    <thead><tr>{previewColumns.map((c) => <th key={c}>{c}</th>)}</tr></thead>
-                    <tbody>
-                      {previewRows.slice(0, 5).map((r) => (
-                        <tr key={r.id}>{previewColumns.map((c) => <td key={c}>{String((r.row_data || {})[c] ?? '')}</td>)}</tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className={`step ${validationLocked ? 'locked' : ''}`}>
-          <div className="step-num">{validationLocked ? '🔒' : '3'}</div>
-          <div className="step-body">
-            <div className="step-title">Validation Checklist</div>
-            <div className="card">
-              {validationLocked && <p className="step-help">Upload a PCM input file to run validation.</p>}
-              {!validationLocked && !validation && <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Validation will appear after upload processing finishes.</p>}
-              {validation && validation.issues.map((issue) => (
-                <div className="validation-row" key={issue.check}>
-                  <span>{issue.check}{issue.message ? ` — ${issue.message}` : ''}</span>
-                  <StatusChip value={issue.status} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className={`step ${calculateLocked ? 'locked' : ''}`}>
-          <div className="step-num">{calculateLocked ? '🔒' : '4'}</div>
-          <div className="step-body">
-            <div className="step-title">Calculate PCM Cost</div>
-            <div className="card">
-              <button className="btn primary" onClick={handleCalculate} disabled={calculateLocked || calculating || Boolean(calculation)}>
-                {calculating ? '⏳ Generating PCM workbook...' : '▶ Generate Output Workbook'}
-              </button>
-              {!validation && <p className="step-help">Complete validation before generating output.</p>}
-              {validationHasError && <p className="validation-err">Fix validation errors before generating output.</p>}
-              {calculation?.logs?.length > 0 && (
-                <div style={{ marginTop: 16 }}>
-                  <p style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Process logs:</p>
-                  {calculation.logs.map((log) => (
-                    <div className="validation-row" key={log.id}>
-                      <span><b>{log.process || log.level}</b> — {log.message}</span>
-                      <StatusChip value={log.level === 'Success' ? 'Passed' : 'Info'} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className={`step ${resultLocked ? 'locked' : ''}`}>
-          <div className="step-num">{resultLocked ? '🔒' : '5'}</div>
-          <div className="step-body">
-            <div className="step-title">Result</div>
-            <div className="card">
-              {!result && <p className="step-help">Result appears after Step 4 finishes. The stored workbook is available from File Download.</p>}
-              {result && (
-                <div className="result-summary">
-                  <div className="result-summary-done">
-                    <div className="result-summary-check">✓</div>
-                    <div>
-                      <p className="result-summary-title">PCM Calculation Completed</p>
-                      <p className="result-summary-sub">Calculation completed and the PCM workbook is stored in outputs. Download fetches the same stored file.</p>
-                    </div>
-                  </div>
-                  <div className="validation-row">
-                    <span>Email notification</span>
-                    <StatusChip value={result.email_sent === 'Yes' ? 'Completed' : 'Not configured'} />
-                  </div>
-                  <div className="validation-row">
-                    <span>📄 PCM Calculation Output.xlsx</span>
-                    <button className="btn" onClick={handleDownloadOutput}>⬇ Download</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  )
+import React, {useEffect, useRef, useState} from 'react'
+import {Link, useParams} from 'react-router-dom'
+import {request} from '../services/api'
+import {useAuth} from '../auth/AuthContext'
+import {usePageCrumb} from '../layouts/ProtectedLayout'
+import {CALCULATION_BASE as BASE, safeError} from '../services/calculations'
+import CalculationResults from '../components/calculations/CalculationResults'
+export default function NewCalculation(){
+ const {runId}=useParams(), {can}=useAuth(),[cap,setCap]=useState(null),[file,setFile]=useState(null),[run,setRun]=useState(null),[snapshot,setSnapshot]=useState(null),[confirmed,setConfirmed]=useState(false),[busy,setBusy]=useState(false),[loading,setLoading]=useState(Boolean(runId)),[error,setError]=useState(''),[dragging,setDragging]=useState(false)
+ const submissionVersion=useRef(0)
+ const inputRef=useRef(null),canRun=can('boms','create'),enabled=cap?.development_enabled===true
+ usePageCrumb(runId?'Calculations / <b>Results</b>':'Calculations / <b>New Calculation</b>')
+ async function refreshSnapshot(){setConfirmed(false);setError('');try{setSnapshot(await request(BASE+'/snapshot'))}catch(e){setError(safeError(e))}}
+ useEffect(()=>{let active=true;submissionVersion.current+=1;setBusy(false);setRun(null);setError('');if(runId){setLoading(true);request(`${BASE}/runs/${encodeURIComponent(runId)}`).then(value=>{if(active)setRun(value)}).catch(e=>{if(active)setError(safeError(e))}).finally(()=>{if(active)setLoading(false)})}else{setLoading(false);request(BASE+'/capabilities').then(value=>{if(active)setCap(value)}).catch(e=>{if(active)setError(safeError(e))})}return()=>{active=false;submissionVersion.current+=1}},[runId])
+ useEffect(()=>{if(enabled&&canRun&&!runId)refreshSnapshot()},[enabled,canRun,runId])
+ function chooseFile(value){if(!value)return;submissionVersion.current+=1;setConfirmed(false);setRun(null);if(!/\.(xlsx|xlsm)$/i.test(value.name)){setFile(null);setError('Choose an Excel workbook (.xlsx or .xlsm).');return}setFile(value);setError('')}
+ async function execute(event){event.preventDefault();if(!file||!confirmed||!snapshot||!enabled)return;const version=++submissionVersion.current;setBusy(true);setError('');setRun(null);try{const body=new FormData();body.append('file',file);body.append('confirmation','development-only');body.append('snapshot_token',snapshot.confirmation_token);const result=await request(BASE+'/runs',{method:'POST',body,isForm:true});if(version===submissionVersion.current){setRun(result);setConfirmed(false)}}catch(e){if(version===submissionVersion.current){setError(safeError(e));if(e.status===409)await refreshSnapshot()}}finally{if(version===submissionVersion.current)setBusy(false)}}
+ return <div className="page-stack new-calculation"><header className="page-heading"><div><Link className="back-link" to="/calculations">Back to Calculations</Link><h1 className="page-title">{runId?'Calculation Results':'New Calculation'}</h1><p className="page-sub">{runId?'Review calculated values, issues and the generated report.':'Upload a workbook, review your master data and calculate available costs.'}</p></div><Link className="btn secondary" to="/calculations">Calculation History</Link></header>
+  {error&&<p className="notice error" role="alert">{error}</p>}{loading&&<div className="card loading" role="status">Loading calculation...</div>}
+  {!runId&&<section className="card calculation-upload"><form onSubmit={execute}><ol className="workflow-steps" aria-label="Calculation workflow"><li className={file?'done':'active'}>1. Upload workbook</li><li className={confirmed?'done':file?'active':''}>2. Confirm master data</li><li className={run?'done':busy?'active':''}>3. Calculate & review</li></ol>
+   {cap&&!enabled&&<p className="notice">Calculations are not currently available for this workspace. Contact your administrator to enable access.</p>}{!canRun&&<p className="notice">Your role can review calculations. Ask your administrator for permission to create one.</p>}
+   <div className={`upload-dropzone${dragging?' dragging':''}${file?' has-file':''}`} onDragOver={e=>{e.preventDefault();if(!busy&&enabled&&canRun)setDragging(true)}} onDragLeave={()=>setDragging(false)} onDrop={e=>{e.preventDefault();setDragging(false);if(!busy&&enabled&&canRun)chooseFile(e.dataTransfer.files[0])}}>
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M12 16V3m-4 4 4-4 4 4M4 15v5h16v-5"/></svg><strong>{file?file.name:'Drag and drop your workbook here'}</strong><span>{file?`${(file.size/1024/1024).toFixed(2)} MB - Ready to upload`:'Excel workbooks (.xlsx or .xlsm)'}</span><button className="btn secondary" type="button" disabled={busy||!enabled||!canRun} onClick={()=>inputRef.current?.click()}>{file?'Choose another file':'Browse Files'}</button><input ref={inputRef} aria-label="Input workbook" className="visually-hidden" type="file" accept=".xlsx,.xlsm" onChange={e=>chooseFile(e.target.files?.[0])} disabled={busy||!enabled||!canRun}/>
+   </div>
+   {canRun&&<div className="snapshot-panel"><div className="page-heading"><div><h3>Master data snapshot</h3><p className="muted">Calculations use a confirmed, consistent copy of the current database values.</p></div><button type="button" className="btn secondary" disabled={busy||!enabled} onClick={refreshSnapshot}>Refresh snapshot</button></div>{snapshot?<><div className="snapshot-counts"><span><strong>{snapshot.master_count}</strong> masters</span><span><strong>{snapshot.source_count}</strong> sources</span><span><strong>{snapshot.source_rows?.toLocaleString()}</strong> records</span></div><p className="muted">Confirmation expires {new Date(snapshot.expires_at*1000).toLocaleTimeString()}. Master data will not be changed.</p><label className="check-label"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)} disabled={busy||!enabled}/> I confirm this master data snapshot and understand that incomplete or unverified results require review.</label></>:<p className="muted">{enabled?'Loading master data snapshot...':'Master data confirmation is unavailable.'}</p>}</div>}
+   <div className="upload-actions"><p className="muted">Available results remain downloadable when some rows are incomplete.</p><button className="btn primary" disabled={busy||!enabled||!canRun||!file||!confirmed||!snapshot}>{busy?'Calculating...':'Calculate'}</button></div>{busy&&<div className="calculation-progress" role="status"><span className="progress-track"><span/></span><p>Reading your workbook, calculating available costs and preparing the Excel report. Keep this page open.</p></div>}
+  </form></section>}
+  {run&&<CalculationResults run={run}/>}
+ </div>
 }

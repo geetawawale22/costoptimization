@@ -1,14 +1,12 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { Provider } from 'react-redux'
-import { store } from './store'
-import App from './App'
-import './styles/global.css'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import { AuthProvider } from './auth/AuthContext.jsx'
+import App from './App.jsx'
+import { ToastProvider } from './context/ToastContext'
+import { ConfirmProvider } from './context/ConfirmContext'
+import './styles.css'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>
+createRoot(document.getElementById('root')).render(
+  <BrowserRouter><AuthProvider><ToastProvider><ConfirmProvider><App /></ConfirmProvider></ToastProvider></AuthProvider></BrowserRouter>,
 )

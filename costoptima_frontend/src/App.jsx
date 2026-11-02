@@ -1,77 +1,43 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
-import { ToastProvider } from './context/ToastContext'
-import { ConfirmProvider } from './context/ConfirmContext'
+import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
-import Layout from './components/Layout'
-
+import ProtectedLayout from './layouts/ProtectedLayout'
 import Login from './pages/Login'
 import SsoCallback from './pages/SsoCallback'
+import Users from './pages/Users'
+import Roles from './pages/Roles'
+import Settings from './pages/Settings'
+import Profile from './pages/Profile'
+import AuditLogs from './pages/AuditLogs'
+import Masters from './pages/Masters'
+import MasterDetail from './pages/MasterDetail'
 import Calculations from './pages/Calculations'
 import NewCalculation from './pages/NewCalculation'
-import Masters from './pages/Masters'
-import CommodityTypes from './pages/CommodityTypes'
-import History from './pages/History'
-import Profile from './pages/Profile'
-import PdfConverter from './pages/PdfConverter'
-import ConverterPlaceholder from './pages/ConverterPlaceholder'
-
-import FormulaRepository from './pages/settings/FormulaRepository'
-import MasterConfiguration from './pages/settings/MasterConfiguration'
-import AuditLogs from './pages/settings/AuditLogs'
-import Users from './pages/settings/Users'
-import RolesPermissions from './pages/settings/RolesPermissions'
-import WorkbookConfig from './pages/settings/WorkbookConfig'
-import OutputTemplates from './pages/settings/OutputTemplates'
-import AppConfig from './pages/settings/AppConfig'
-
+import FormulaManagement from './pages/FormulaManagement'
+import FtgConverter from './pages/FtgConverter'
+import { useAuth } from './auth/AuthContext'
+function Allowed({ resource, children }) { const { can } = useAuth(); return can(resource, 'view') ? children : <p role="alert">You do not have permission to view this page.</p> }
 export default function App() {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        <ToastProvider>
-        <ConfirmProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/sso/callback" element={<SsoCallback />} />
-
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="/calculations" replace />} />
-              <Route path="calculations" element={<Calculations />} />
-              <Route path="new-calculation" element={<NewCalculation />} />
-
-              <Route path="masters/:typeCode" element={<Masters />} />
-
-              <Route path="commodity-types/:commodityCode" element={<CommodityTypes />} />
-              <Route path="commodity-types/:commodityCode/:category" element={<CommodityTypes />} />
-              <Route path="history" element={<History />} />
-              <Route path="pdf-converter" element={<PdfConverter />} />
-              <Route path="converter/ftg-fixture-input-to-rpa" element={<ConverterPlaceholder title="FTG Fixture - Input to RPA" />} />
-              <Route path="converter/ftg-fixture-ppt-to-input-excel" element={<ConverterPlaceholder title="FTG Fixture - PPT to Input Excel" />} />
-              <Route path="profile" element={<Profile />} />
-
-              <Route path="settings/formula-repository" element={<FormulaRepository />} />
-              <Route path="settings/master-configuration" element={<MasterConfiguration />} />
-              <Route path="settings/audit-logs" element={<AuditLogs />} />
-              <Route path="settings/users" element={<Users />} />
-              <Route path="settings/roles-permissions" element={<RolesPermissions />} />
-              <Route path="settings/workbook-configuration" element={<WorkbookConfig />} />
-              <Route path="settings/output-templates" element={<OutputTemplates />} />
-              <Route path="settings/app-configuration" element={<AppConfig />} />
-
-              <Route path="*" element={<div style={{ padding: 40 }}>Page not found.</div>} />
-            </Route>
-          </Routes>
-        </ConfirmProvider>
-        </ToastProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  )
+ return <Routes><Route path="/login" element={<Login />} /><Route path="/sso/callback" element={<SsoCallback />} />
+    <Route path="/sso" element={<SsoCallback />} />
+  <Route path="/" element={<ProtectedRoute><ProtectedLayout /></ProtectedRoute>}>
+   <Route index element={<Navigate to="/calculations" replace />} />
+   <Route path="calculations" element={<Allowed resource="boms"><Calculations /></Allowed>} />
+   <Route path="calculations/new" element={<Allowed resource="boms"><NewCalculation /></Allowed>} />
+   <Route path="calculations/:runId" element={<Allowed resource="boms"><NewCalculation /></Allowed>} />
+   <Route path="activity-logs" element={<Allowed resource="settings"><AuditLogs /></Allowed>} />
+   <Route path="formula-management" element={<Allowed resource="settings"><FormulaManagement /></Allowed>} />
+   <Route path="ftg-converter" element={<Allowed resource="converters"><FtgConverter /></Allowed>} />
+   <Route path="masters" element={<Allowed resource="masters"><Masters /></Allowed>} />
+   <Route path="masters/:code" element={<Allowed resource="masters"><MasterDetail /></Allowed>} />
+   <Route path="profile" element={<Profile />} />
+   <Route path="settings/audit-logs" element={<Navigate to="/activity-logs" replace />} />
+   <Route path="settings/users" element={<Allowed resource="users"><Users /></Allowed>} />
+   <Route path="settings/roles-permissions" element={<Allowed resource="roles"><Roles /></Allowed>} />
+   <Route path="settings/app-configuration" element={<Allowed resource="settings"><Settings /></Allowed>} />
+   <Route path="users" element={<Navigate to="/settings/users" replace />} />
+   <Route path="roles" element={<Navigate to="/settings/roles-permissions" replace />} />
+   <Route path="settings" element={<Navigate to="/settings/app-configuration" replace />} />
+   <Route path="*" element={<p>Page not found.</p>} />
+  </Route></Routes>
 }

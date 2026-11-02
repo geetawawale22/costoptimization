@@ -1,7 +1,8 @@
+import React from 'react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { ssoLoginUrl, ssoStatus } from '../api/auth'
+import { ssoLoginUrl, ssoStatus } from '../services/api'
+import { useAuth } from '../auth/AuthContext'
 
 function MailIcon() {
   return (
@@ -35,10 +36,12 @@ function EyeIcon({ hidden }) {
 function BrandHeader() {
   return (
     <div className="login-brand-header">
-      <div className="login-logo" aria-hidden="true">co</div>
+      <div className="login-logo">
+        <img src="image.png" alt="Cost Pilot" />
+      </div>
       <div>
-        <strong>CostOptima</strong>
-        <span>Cost intelligence platform</span>
+        <strong>Cost Pilot</strong>
+        <span>Cost Excellence Delivered</span>
       </div>
     </div>
   )
@@ -46,16 +49,16 @@ function BrandHeader() {
 
 function MarketingPanel() {
   return (
-    <aside className="login-marketing-panel" aria-label="CostOptima overview">
+    <aside className="login-marketing-panel" aria-label="Cost Pilot overview">
       <BrandHeader />
 
       <div className="login-marketing-copy">
         <span className="login-secure-badge">Secure workspace</span>
         <h1>Manufacturing cost control, simplified.</h1>
         <ul className="login-feature-list">
-          <li>Real-time BOM cost calculations</li>
-          <li>Role-based approvals and audit trail</li>
-          <li>Master data governed in one place</li>
+          <li>Clear, connected cost calculations</li>
+          <li>Database-backed master data</li>
+          <li>Excel reports and traceable results</li>
         </ul>
       </div>
     </aside>
@@ -116,18 +119,6 @@ function PasswordField({ value, onChange, error }) {
   )
 }
 
-function RememberMe() {
-  return (
-    <div className="login-options-row">
-      <label className="login-check">
-        <input type="checkbox" />
-        <span>Keep me signed in</span>
-      </label>
-      <button type="button" className="login-link">Forgot password?</button>
-    </div>
-  )
-}
-
 function PrimaryButton({ busy }) {
   return (
     <button className="btn primary login-submit" disabled={busy}>
@@ -162,7 +153,7 @@ function LoginCard({ email, password, error, busy, ssoEnabled, onEmailChange, on
       <div className="login-card">
         <div className="login-header">
           <span className="login-kicker">Welcome back</span>
-          <h2>Sign in to CostOptima</h2>
+          <h2>Sign in to Cost Pilot</h2>
           <p>Use your corporate credentials to continue.</p>
         </div>
 
@@ -182,7 +173,6 @@ function LoginCard({ email, password, error, busy, ssoEnabled, onEmailChange, on
           </FormField>
 
           <PasswordField value={password} onChange={onPasswordChange} error={passwordError} />
-          <RememberMe />
           <PrimaryButton busy={busy} />
         </form>
 
@@ -197,15 +187,16 @@ export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [email, setEmail] = useState('admin@costoptima.com')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [ssoEnabled, setSsoEnabled] = useState(false)
-
   useEffect(() => {
-    ssoStatus().then((res) => setSsoEnabled(Boolean(res?.enabled))).catch(() => setSsoEnabled(false))
+    ssoStatus().then(result => setSsoEnabled(Boolean(result?.enabled))).catch(() => setSsoEnabled(false))
   }, [])
+
+
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -219,7 +210,11 @@ export default function Login() {
     setBusy(true)
     try {
       await login(email, password)
-      const dest = location.state?.from?.pathname || '/calculations'
+      const from = location.state?.from
+      const saved = sessionStorage.getItem('costoptima.returnTo')
+      const requested = from ? from.pathname + (from.search || '') + (from.hash || '') : saved
+      const dest = requested?.startsWith('/') && !requested.startsWith('//') && !requested.startsWith('/login') ? requested : '/calculations'
+      sessionStorage.removeItem('costoptima.returnTo')
       navigate(dest, { replace: true })
     } catch (err) {
       setError(err.message)

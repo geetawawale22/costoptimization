@@ -42,7 +42,7 @@ function InviteModal({ roles, onClose, onSave, saving }) {
         </div>
         <footer className="config-modal-footer">
           <button type="button" className="btn" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn primary" disabled={invalid || saving} onClick={() => onSave(draft)}>{saving ? 'Inviting...' : 'Invite User'}</button>
+          <button type="button" className="btn primary" disabled={invalid || saving} aria-busy={saving} onClick={() => onSave(draft)}>{saving ? 'Inviting...' : 'Invite User'}</button>
         </footer>
       </div>
     </div>
@@ -93,7 +93,7 @@ function EditUserModal({ user, roles, onClose, onSave, saving }) {
         </div>
         <footer className="config-modal-footer">
           <button type="button" className="btn" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn primary" disabled={!draft.name || saving} onClick={() => onSave(draft)}>{saving ? 'Saving...' : 'Save Changes'}</button>
+          <button type="button" className="btn primary" disabled={!draft.name || saving} aria-busy={saving} onClick={() => onSave(draft)}>{saving ? 'Saving...' : 'Save Changes'}</button>
         </footer>
       </div>
     </div>
@@ -105,11 +105,12 @@ export default function Users() {
   const { can, appearance } = useAuth()
   const showToast = useToast()
   const confirm = useConfirm()
-  const [usersMeta, setUsersMeta] = useState({ items: [], total: 0, page: 1, page_size: 50, total_pages: 1 })
+  const [usersMeta, setUsersMeta] = useState({ items: [], total: 0, page: 1, page_size: 20, total_pages: 1 })
   const [allUsers, setAllUsers] = useState([]) // full set, for accurate stat counts
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [q, setQ] = useState('')
+  const [kpiFilter, setKpiFilter] = useState('')
   const [roles, setRoles] = useState([])
   const [inviteOpen, setInviteOpen] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
@@ -119,7 +120,11 @@ export default function Users() {
     setLoading(true)
     try {
       const [usersRes, rolesRes, fullRes] = await Promise.all([
-        miscApi.listUsers(page, appearance["ui.page_size"], q),
+        miscApi.listUsers(page, 20, q, {
+          ...(kpiFilter === 'active' ? { status: 'Active' } : {}),
+          ...(kpiFilter === 'inactive' ? { status: 'Inactive' } : {}),
+          ...(kpiFilter === 'admins' ? { admins_only: true } : {}),
+        }),
         miscApi.listRoles(1, 200),
         miscApi.userStatistics(),
       ])
@@ -136,7 +141,7 @@ export default function Users() {
   useEffect(() => {
     refresh()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, q, appearance["ui.page_size"]])
+  }, [page, q, kpiFilter])
 
   async function handleInvite(draft) {
     setSaving(true)
@@ -211,10 +216,16 @@ export default function Users() {
       </div>
 
       <div className="user-stats">
-        <div className="stat-card"><div className="lbl">Total Users</div><div className="val">{stats.total}</div></div>
-        <div className="stat-card"><div className="lbl">Active</div><div className="val">{stats.active}</div></div>
-        <div className="stat-card"><div className="lbl">Inactive</div><div className="val">{stats.inactive}</div></div>
-        <div className="stat-card"><div className="lbl">Admins</div><div className="val">{stats.adminCount}</div></div>
+        {[
+          ['total', 'Total Users', stats.total],
+          ['active', 'Active', stats.active],
+          ['inactive', 'Inactive', stats.inactive],
+          ['admins', 'Admins', stats.adminCount],
+        ].map(([key, label, value]) => (
+          <button type="button" key={key} className={`stat-card user-stat-card${kpiFilter === key ? ' is-active' : ''}`} aria-pressed={kpiFilter === key} onClick={() => { setKpiFilter(current => current === key ? '' : key); setPage(1) }}>
+            <span className="lbl">{label}</span><strong className="val">{value}</strong><small>Click to view users</small>
+          </button>
+        ))}
       </div>
 
       <div className="card user-card">

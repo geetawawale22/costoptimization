@@ -106,11 +106,16 @@ from app.security import (require_permission, hash_password, management_lock, pr
 router = APIRouter(prefix="/api", tags=["Users"])
 @router.get("/users", response_model=PaginatedResponse[UserOut])
 def list_users(page: int = 1, page_size: int = DEFAULT_PAGE_SIZE, q: str = "",
+               status: str = "", admins_only: bool = False,
                db: Session = Depends(get_db), _=Depends(require_permission("users", "view"))):
     query = db.query(User).options(joinedload(User.role)).filter(User.is_deleted.is_(False))
     if q:
         like = f"%{q}%"
         query = query.filter((User.name.ilike(like)) | (User.email.ilike(like)) | (User.employee_id.ilike(like)))
+    if status in {"Active", "Inactive"}:
+        query = query.filter(User.status == status)
+    if admins_only:
+        query = query.join(Role, Role.id == User.role_id).filter(Role.name.ilike("%admin%"))
     query = query.order_by(User.name)
     items, total, page, page_size, total_pages = paginate_query(query, page, page_size)
     return PaginatedResponse[UserOut](items=items, total=total, page=page, page_size=page_size, total_pages=total_pages)

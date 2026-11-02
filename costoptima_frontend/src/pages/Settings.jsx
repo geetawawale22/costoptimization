@@ -64,7 +64,7 @@ export default function AppConfig() {
   const confirm = useConfirm()
   const [rows, setRows] = useState([])
   const [options, setOptions] = useState({ groups: ['GENERAL'], keys: [], detected_keys: [], predefined_groups: [] })
-  const [pagination, setPagination] = useState({ page: 1, page_size: 50, total_pages: 1, total: 0 })
+  const [pagination, setPagination] = useState({ page: 1, page_size: 20, total_pages: 1, total: 0 })
   const [filters, setFilters] = useState({ q: '', group: '', key: '', active: '', type: '' })
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -96,7 +96,7 @@ export default function AppConfig() {
     try {
       const params = {
         page,
-        pageSize: pagination.page_size,
+        pageSize: 20,
         q: selectedFilters.q,
         group: selectedFilters.group,
         key: selectedFilters.key,
@@ -228,7 +228,7 @@ export default function AppConfig() {
               <input aria-label="Filter setting key" placeholder="Key filter" value={filters.key} onChange={(e) => setFilters({ ...filters, key: e.target.value })} />
               <select aria-label="Filter settings by type" value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value })}><option value="">All value types</option>{TYPES.map((type) => <option key={type} value={type}>{TYPE_LABELS[type]}</option>)}</select>
               <select aria-label="Filter settings by status" value={filters.active} onChange={(e) => setFilters({ ...filters, active: e.target.value })}><option value="">All statuses</option><option value="true">Active</option><option value="false">Inactive</option></select>
-              <button className="btn" onClick={() => load(1)} disabled={loading}>{loading ? 'Loading...' : 'Search'}</button>
+              <button className="btn" onClick={() => load(1)} disabled={loading} aria-busy={loading}>{loading ? 'Loading...' : 'Search'}</button>
               <button type="button" className="btn" onClick={() => { const cleared = { q: '', group: '', key: '', active: '', type: '' }; setFilters(cleared); load(1, cleared) }}>Reset</button>
             </div>
           </div>
@@ -383,7 +383,7 @@ export default function AppConfig() {
 
                 <div className="config-actions modal-actions">
                   <button type="button" className="btn" onClick={closeForm}>Cancel</button>
-                  <button className="btn primary" disabled={!canEdit || saving}>{saving ? 'Saving...' : editing ? 'Update Configuration' : 'Add Configuration'}</button>
+                  <button className="btn primary" disabled={!canEdit || saving} aria-busy={saving}>{saving ? 'Saving...' : editing ? 'Update Configuration' : 'Add Configuration'}</button>
                 </div>
               </form>
             </div>

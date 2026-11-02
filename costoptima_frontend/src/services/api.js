@@ -103,8 +103,8 @@ export function logout() {
 
 
 // Users
-export const listUsers = (page = 1, pageSize = 50, q = '') =>
-  request('/users', { params: { page, page_size: pageSize, q } })
+export const listUsers = (page = 1, pageSize = 20, q = '', filters = {}) =>
+  request('/users', { params: { page, page_size: pageSize, q, ...filters } })
 export const createUser = (payload) => request('/users', { method: 'POST', body: payload })
 export const getUser = (id) => request(`/users/${id}`)
 export const updateUser = (id, payload) => request(`/users/${id}`, { method: 'PUT', body: payload })
@@ -112,7 +112,7 @@ export const deactivateUser = (id, reason) =>
   request(`/users/${id}`, { method: 'DELETE', params: { reason } })
 
 // Roles
-export const listRoles = (page = 1, pageSize = 50, q = '') =>
+export const listRoles = (page = 1, pageSize = 20, q = '') =>
   request('/roles', { params: { page, page_size: pageSize, q } })
 export const createRole = (payload) => request('/roles', { method: 'POST', body: payload })
 export const updateRole = (id, payload) => request(`/roles/${id}`, { method: 'PUT', body: payload })
@@ -130,7 +130,7 @@ export const deletePermission = (id) => request(`/permissions/${id}`, { method: 
 
 // Dynamic application configuration / secrets
 export const appConfigOptions = () => request('/app-config/options')
-export const listAppConfig = ({ page = 1, pageSize = 50, q = '', group = '', key = '', type = '', active = '' } = {}) =>
+export const listAppConfig = ({ page = 1, pageSize = 20, q = '', group = '', key = '', type = '', active = '' } = {}) =>
   request('/app-config', { params: { page, page_size: pageSize, q, group, key, type, active } })
 export const createAppConfig = (payload) => request('/app-config', { method: 'POST', body: payload })
 export const updateAppConfig = (id, payload) =>

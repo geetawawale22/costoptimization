@@ -173,7 +173,7 @@ def execute_import(source_id:int,payload:ExecuteImport,db:Session=Depends(get_db
 
 
 @router.get('/sources/{source_id}/history')
-def history(source_id:int,page:int=Query(1,ge=1),page_size:int=Query(50,ge=1,le=200),db:Session=Depends(get_db),user=Depends(VIEW)):
+def history(source_id:int,page:int=Query(1,ge=1),page_size:int=Query(20,ge=1,le=200),db:Session=Depends(get_db),user=Depends(VIEW)):
     s=repo.source(db,source_id)
     count=db.scalar(select(func.count()).select_from(meta.batches).where(meta.batches.c.source_id==source_id))
     batches=[dict(r) for r in db.execute(select(meta.batches).where(meta.batches.c.source_id==source_id).order_by(meta.batches.c.batch_id.desc()).offset((page-1)*page_size).limit(page_size)).mappings()]
@@ -183,7 +183,8 @@ def history(source_id:int,page:int=Query(1,ge=1),page_size:int=Query(50,ge=1,le=
     T=AuditEvent.__table__
     event_count=db.scalar(select(func.count()).select_from(T).where(T.c.resource=='masters',T.c.target_type==s['data_table_name']))
     audit=[dict(r) for r in db.execute(select(T.c.event_id,T.c.occurred_at,T.c.actor_user_id,T.c.session_ref,T.c.request_id,T.c.action,T.c.outcome,T.c.changes,T.c.summary).where(T.c.resource=='masters',T.c.target_type==s['data_table_name']).order_by(T.c.id.desc()).offset((page-1)*page_size).limit(page_size)).mappings()]
-    return {'batches':batches,'events':audit,'page':page,'total':count,'total_pages':max(1,(max(count,event_count)+page_size-1)//page_size)}
+    total=max(count,event_count)
+    return {'batches':batches,'events':audit,'page':page,'page_size':page_size,'total':total,'total_pages':max(1,(total+page_size-1)//page_size)}
 
 
 @router.post('/masters/{code}/publish')

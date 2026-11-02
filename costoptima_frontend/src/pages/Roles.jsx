@@ -51,7 +51,7 @@ function PermissionDefinitionModal({ initial, title, onClose, onSave, saving }) 
   return (
     <Modal title={title} subtitle="Add a reusable resource and action permission." onClose={onClose} className="permission-definition-modal" footer={<>
       <button type="button" className="btn" onClick={onClose}>Cancel</button>
-      <button type="button" className="btn primary" disabled={!draft.resource.trim() || saving} onClick={() => onSave(draft)}>{saving ? 'Saving...' : actionLabel}</button>
+      <button type="button" className="btn primary" disabled={!draft.resource.trim() || saving} aria-busy={saving} onClick={() => onSave(draft)}>{saving ? 'Saving...' : actionLabel}</button>
     </>}>
       <div className="access-section-label">Permission details</div>
       <div className="access-form-grid">
@@ -104,7 +104,7 @@ function RoleFormModal({ role, userCount, permissions, grantedIds, canDelete, on
       footer={<>
         {role && <button type="button" className="btn danger" disabled={!canDelete} onClick={() => onDelete(role)}>Delete Role</button>}
         <button type="button" className="btn" onClick={onClose}>Cancel</button>
-        <button type="button" className="btn primary" disabled={!draft.name.trim() || saving} onClick={() => onSave(draft, [...selectedIds])}>{saving ? 'Saving...' : role ? 'Save Changes' : 'Create Role'}</button>
+        <button type="button" className="btn primary" disabled={!draft.name.trim() || saving} aria-busy={saving} onClick={() => onSave(draft, [...selectedIds])}>{saving ? 'Saving...' : role ? 'Save Changes' : 'Create Role'}</button>
       </>}
     >
       <div className="role-form-section">
@@ -153,7 +153,7 @@ function RoleFormModal({ role, userCount, permissions, grantedIds, canDelete, on
 }
 
 export default function RolesPermissions() {
-  usePageCrumb('Settings / <b>Roles &amp; Permissions</b>')
+  usePageCrumb('Settings / Roles & Permissions')
   const { can, reload } = useAuth()
   const showToast = useToast()
   const confirm = useConfirm()
@@ -366,12 +366,12 @@ export default function RolesPermissions() {
       {loadError && <div className="error-text">Couldn't load roles &amp; permissions: {loadError}. <button type="button" className="btn" onClick={loadInitial}>Retry</button></div>}
 
       <div className="perm-toolbar-row">
-        <input className="search-box perm-matrix-search" placeholder="Search permission name, key, or module..." value={query} onChange={(event) => setQuery(event.target.value)} />
-        <select value={moduleFilter} onChange={(event) => setModuleFilter(event.target.value)}>
+        <label className="perm-search-wrap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.6"/><path d="m13 13 4 4"/></svg><input className="search-box perm-matrix-search" aria-label="Search permissions" placeholder="Search permission name, key, or module..." value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+        <select aria-label="Filter by module" value={moduleFilter} onChange={(event) => setModuleFilter(event.target.value)}>
           <option value="">All Modules</option>
           {moduleKeys.map((key) => <option key={key} value={key}>{key.replaceAll('_', ' ')}</option>)}
         </select>
-        <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
+        <select aria-label="Filter by role" value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
           <option value="">All Roles</option>
           {roles.map((role) => <option key={role.id} value={role.id}>{role.name}</option>)}
         </select>

@@ -1,42 +1,47 @@
-import React from 'react'
-/**
- * Generic server-side pagination bar. Expects a PaginatedResponse-shaped object
- * ({ page, page_size, total, total_pages }) and calls onPageChange(nextPage) with a
- * real page number — the caller is responsible for re-fetching that page, so clicking
- * "2" always loads the actual next 50 records rather than just relabelling the button.
- */
+﻿import React from 'react'
+
+/** Numbered pagination shared by the application's data tables. */
 export default function Pagination({ page, pageSize, total, totalPages, onPageChange }) {
   if (!total || totalPages <= 1) return null
 
-  const start = total === 0 ? 0 : (page - 1) * pageSize + 1
+  const start = (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, total)
-
   const pageNumbers = []
   const windowSize = 2
-  for (let p = Math.max(1, page - windowSize); p <= Math.min(totalPages, page + windowSize); p++) {
-    pageNumbers.push(p)
+  for (let number = Math.max(1, page - windowSize); number <= Math.min(totalPages, page + windowSize); number += 1) {
+    pageNumbers.push(number)
   }
 
+  const Arrow = ({ direction }) => (
+    <svg aria-hidden="true" viewBox="0 0 20 20" className={`pagination-arrow ${direction}`}>
+      <path d="M11.75 4.5 6.25 10l5.5 5.5" />
+    </svg>
+  )
+
   return (
-    <div className="foot-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-      <span>
-        Showing {start}–{end} of {total}
-      </span>
-      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-        <button className="btn" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>‹ Prev</button>
-        {pageNumbers[0] > 1 && <span style={{ padding: '0 4px' }}>…</span>}
-        {pageNumbers.map((p) => (
+    <div className="foot-row pagination-bar">
+      <span>Showing {start}{'\u2013'}{end} of {total}</span>
+      <div className="pagination-controls">
+        <button type="button" className="btn pagination-nav-btn" aria-label="Previous page" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+          <Arrow direction="left" /><span>Previous</span>
+        </button>
+        {pageNumbers[0] > 1 && <span className="pagination-ellipsis" aria-hidden="true">...</span>}
+        {pageNumbers.map((number) => (
           <button
-            key={p}
-            className={`btn ${p === page ? 'primary' : ''}`}
-            style={{ minWidth: 32 }}
-            onClick={() => onPageChange(p)}
+            type="button"
+            key={number}
+            className={`btn pagination-page-btn ${number === page ? 'active' : ''}`}
+            aria-label={`Page ${number}`}
+            aria-current={number === page ? 'page' : undefined}
+            onClick={() => onPageChange(number)}
           >
-            {p}
+            {number}
           </button>
         ))}
-        {pageNumbers[pageNumbers.length - 1] < totalPages && <span style={{ padding: '0 4px' }}>…</span>}
-        <button className="btn" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>Next ›</button>
+        {pageNumbers[pageNumbers.length - 1] < totalPages && <span className="pagination-ellipsis" aria-hidden="true">...</span>}
+        <button type="button" className="btn pagination-nav-btn" aria-label="Next page" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
+          <span>Next</span><Arrow direction="right" />
+        </button>
       </div>
     </div>
   )

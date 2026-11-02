@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { usePageCrumb } from '../layouts/ProtectedLayout'
+import Pagination from '../components/Pagination'
 import { downloadBlob } from '../services/api'
 import { convertFtgPdfs, downloadFtgJob, ftgCapabilities, listFtgJobs, previewFtgJob } from '../services/ftg'
 import './FtgConverter.css'
@@ -27,9 +28,10 @@ export default function FtgConverter() {
   const [page, setPage] = useState(1)
   const [preview, setPreview] = useState(null)
   const [previewBusy, setPreviewBusy] = useState(false)
+  const [downloading, setDownloading] = useState('')
   const [previewJob, setPreviewJob] = useState(null)
   const fileInput = useRef(null)
-  const pageSize = 15
+  const pageSize = 20
 
   async function refreshJobs() {
     setHistoryLoading(true)
@@ -68,12 +70,14 @@ export default function FtgConverter() {
     } finally { setBusy(false) }
   }
   async function downloadSaved(job) {
+    setDownloading(job.id)
     try { downloadBlob(await downloadFtgJob(job.id), job.output_filename || 'Compiled_MSS_Report.xlsx') }
     catch (failure) { setError(failure.message || 'Unable to download converter output.') }
+    finally { setDownloading('') }
   }
   async function openPreview(job, sheet, start = 1) {
     setPreviewJob(job); setPreviewBusy(true); setError('')
-    try { setPreview(await previewFtgJob(job.id, { sheet, start, rows: 25, columns: 16 })) }
+    try { setPreview(await previewFtgJob(job.id, { sheet, start, rows: 20, columns: 16 })) }
     catch (failure) { setError(failure.message || 'Unable to preview this workbook.') }
     finally { setPreviewBusy(false) }
   }
@@ -103,10 +107,10 @@ export default function FtgConverter() {
           </div>
           <p id="ftg-file-hint" className="pdf-converter-hint">Up to 16 files. 20 MB per file, 64 MB per batch and 40 pages per document. Scanned PDFs need readable text.</p>
           {!!files.length && <ul className="pdf-converter-files">{files.map(file => <li key={file.name}><span>{file.name}</span><small>{bytes(file.size)}</small></li>)}</ul>}
-          <button className="btn primary pdf-converter-submit" type="submit" disabled={busy || !files.length}>{busy ? 'Converting...' : 'Convert to Excel'}</button>
+          <button className="btn primary pdf-converter-submit" type="submit" disabled={busy || !files.length} aria-busy={busy}>{busy ? 'Converting...' : 'Convert to Excel'}</button>
           <div aria-live="polite" role="status">
             {busy && <p className="pdf-converter-hint">Reading your documents and preparing the workbook. This may take a few minutes.</p>}
-            {result && <div className="pdf-converter-success"><p>{result.converted_files.length} PDF{result.converted_files.length === 1 ? '' : 's'} converted. Your workbook is ready.</p><button type="button" className="btn" onClick={() => openPreview(result)}>Preview Excel</button> <button type="button" className="btn primary" onClick={() => downloadSaved(result)}>Download Excel</button>
+            {result && <div className="pdf-converter-success"><p>{result.converted_files.length} PDF{result.converted_files.length === 1 ? '' : 's'} converted. Your workbook is ready.</p><button type="button" className="btn" onClick={() => openPreview(result)}>Preview Excel</button> <button type="button" className="btn primary" disabled={downloading===result.id} aria-busy={downloading===result.id} onClick={() => downloadSaved(result)}>{downloading===result.id?'Preparing download...':'Download Excel'}</button>
               {!!result.failed_files.length && <ul>{result.failed_files.map(file => <li key={file.filename}>{file.filename}: {file.reason}</li>)}</ul>}
             </div>}
           </div>
@@ -114,22 +118,22 @@ export default function FtgConverter() {
       </div>
       <section className="card ftg-history">
         <div className="ftg-history-head"><h2>Converted Files</h2><label>Search files<input value={query} onChange={event => { setQuery(event.target.value); setPage(1) }} placeholder="Search input filename" /></label></div>
-        {historyLoading ? <p className="muted">Loading converted files...</p> : <div className="table-scroll"><table>
+        {historyLoading ? <div className="loading-inline" role="status">Loading converted files...</div> : <div className="table-scroll"><table>
           <thead><tr><th>Input file</th><th>Version</th><th>Status</th><th>Created</th><th>Output</th><th>Actions</th></tr></thead>
           <tbody>{!history.items.length && <tr><td colSpan="6" className="ftg-empty">No converted files yet.</td></tr>}
-            {history.items.map(job => <tr key={job.id}><td>{job.source_name}</td><td>v{job.version}</td><td><span className={`chip ${job.status === 'completed' ? 'green' : 'amber'}`}>{stateLabel(job.status)}</span></td><td>{new Date(job.created_at).toLocaleString()}</td><td>{job.output_filename}</td><td><div className="ftg-actions"><button className="btn" onClick={() => openPreview(job)}>Preview</button><button className="btn" onClick={() => downloadSaved(job)}>Download</button></div></td></tr>)}
+            {history.items.map(job => <tr key={job.id}><td>{job.source_name}</td><td>v{job.version}</td><td><span className={`chip ${job.status === 'completed' ? 'green' : 'amber'}`}>{stateLabel(job.status)}</span></td><td>{new Date(job.created_at).toLocaleString()}</td><td>{job.output_filename}</td><td><div className="ftg-actions"><button className="btn" onClick={() => openPreview(job)}>Preview</button><button className="btn" disabled={downloading===job.id} aria-busy={downloading===job.id} onClick={() => downloadSaved(job)}>{downloading===job.id?'Preparing...':'Download'}</button></div></td></tr>)}
           </tbody>
         </table></div>}
-        <div className="ftg-pagination"><span>{history.total} conversion{history.total === 1 ? '' : 's'}</span><button className="btn" disabled={page === 1 || historyLoading} onClick={() => setPage(page - 1)}>Previous</button><span>Page {page}</span><button className="btn" disabled={page * pageSize >= history.total || historyLoading} onClick={() => setPage(page + 1)}>Next</button></div>
+        <Pagination page={page} pageSize={pageSize} total={history.total} totalPages={Math.ceil(history.total/pageSize)} onPageChange={next=>setPage(next)}/>
       </section>
     </section>}
     {error && <p className="pdf-converter-error" role="alert">{error}</p>}
     {previewJob && <section className="card ftg-preview" aria-label="Converted workbook preview">
       <div className="ftg-history-head"><h2>Excel Preview</h2><button className="btn" onClick={() => { setPreviewJob(null); setPreview(null) }}>Close preview</button></div>
-      {previewBusy && <p role="status">Loading worksheet...</p>}
+      {previewBusy && <div className="loading-inline" role="status">Loading worksheet...</div>}
       {preview && <><label>Worksheet <select value={preview.sheet} onChange={event => openPreview(previewJob, event.target.value)}>{preview.sheets.map(sheet => <option key={sheet.name} value={sheet.name}>{sheet.name}</option>)}</select></label>
         <div className="table-scroll"><table><tbody>{preview.rows.map((row, index) => <tr key={index}>{row.map((value, column) => <td key={column}>{value === null || value === undefined ? '' : String(value)}</td>)}</tr>)}</tbody></table></div>
-        <div className="ftg-pagination"><button className="btn" disabled={previewBusy || preview.start <= 1} onClick={() => openPreview(previewJob, preview.sheet, Math.max(1, preview.start - 25))}>Previous rows</button><span>Rows {preview.start}-{preview.start + preview.rows.length - 1}</span><button className="btn" disabled={previewBusy || preview.start + preview.rows.length > (preview.sheets.find(sheet => sheet.name === preview.sheet)?.rows || 0)} onClick={() => openPreview(previewJob, preview.sheet, preview.start + 25)}>Next rows</button></div>
+        <div className="muted">Rows {preview.start}-{preview.start + preview.rows.length - 1} of {preview.sheets.find(sheet => sheet.name === preview.sheet)?.rows || 0}</div><Pagination page={Math.ceil(preview.start/20)} pageSize={20} total={preview.sheets.find(sheet => sheet.name === preview.sheet)?.rows || 0} totalPages={Math.ceil((preview.sheets.find(sheet => sheet.name === preview.sheet)?.rows || 0)/20)} onPageChange={next=>openPreview(previewJob,preview.sheet,(next-1)*20+1)}/>
         <p className="muted">Preview shows saved cell values. Excel retains the original layout, images and selection lists.</p>
       </>}
     </section>}

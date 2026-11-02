@@ -37,7 +37,7 @@ function BrandHeader() {
   return (
     <div className="login-brand-header">
       <div className="login-logo">
-        <img src="image.png" alt="Cost Pilot" />
+        <img src="/image.png" alt="Cost Pilot" />
       </div>
       <div>
         <strong>Cost Pilot</strong>
@@ -121,7 +121,7 @@ function PasswordField({ value, onChange, error }) {
 
 function PrimaryButton({ busy }) {
   return (
-    <button className="btn primary login-submit" disabled={busy}>
+    <button className="btn primary login-submit" disabled={busy} aria-busy={busy}>
       {busy ? 'Signing in...' : 'Sign In'}
     </button>
   )

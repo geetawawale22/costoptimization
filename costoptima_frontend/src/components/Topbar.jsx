@@ -6,7 +6,8 @@ import { useAuth } from '../auth/AuthContext'
 export default function Topbar({ crumb }) {
   const { user, logout } = useAuth()
   const [logoutError, setLogoutError] = useState('')
-  async function signOut() { try { await logout() } catch (error) { setLogoutError(error.message) } }
+  const [loggingOut, setLoggingOut] = useState(false)
+  async function signOut() { setLoggingOut(true); setLogoutError(''); try { await logout() } catch (error) { setLogoutError(error.message) } finally { setLoggingOut(false) } }
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
   const initials = user?.name ? user.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase() : ''
@@ -59,7 +60,7 @@ export default function Topbar({ crumb }) {
               </div>
               <div className="profile-popover-actions">
                 <Link className="btn secondary" to="/profile" onClick={() => setOpen(false)}>View Profile</Link>
-                <button className="btn danger" type="button" onClick={signOut}>Logout</button>
+                <button className="btn danger" type="button" disabled={loggingOut} aria-busy={loggingOut} onClick={signOut}>{loggingOut ? 'Logging out...' : 'Logout'}</button>
               </div>
             </div>
           )}

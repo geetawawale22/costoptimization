@@ -35,12 +35,14 @@ export default function SsoCallback() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const [message, setMessage] = useState('Completing SSO sign in...')
+  const [pending, setPending] = useState(true)
 
   useEffect(() => {
     async function finish() {
       const status = params.get('status')
       if (status === 'error') {
         setMessage(params.get('message') || 'SSO sign in failed.')
+        setPending(false)
         return
       }
       try {
@@ -60,6 +62,7 @@ export default function SsoCallback() {
         navigate(requested?.startsWith('/') && !requested.startsWith('//') && !requested.startsWith('/login') ? requested : '/calculations', { replace: true })
       } catch (err) {
         setMessage(err.message || 'Could not complete SSO sign in.')
+        setPending(false)
       }
     }
     finish()
@@ -69,7 +72,7 @@ export default function SsoCallback() {
     <div className="login-wrap">
       <div className="login-card">
         <h1>SSO Sign In</h1>
-        <p>{message}</p>
+        <p className={pending ? 'loading-inline' : ''} role={pending ? 'status' : undefined}>{message}</p>
         <button className="btn primary" onClick={() => navigate('/login', { replace: true })}>Back to Login</button>
       </div>
     </div>

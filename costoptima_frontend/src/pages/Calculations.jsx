@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Link} from 'react-router-dom'
 import {request} from '../services/api'
 import {useAuth} from '../auth/AuthContext'
@@ -19,7 +19,8 @@ function CalculationActionIcon({name}){
 export default function Calculations(){
  usePageCrumb('Workspace / <b>Calculations</b>')
  const {can,user}=useAuth(),[filters,setFilters]=useState(EMPTY),[applied,setApplied]=useState(EMPTY),[page,setPage]=useState(1),[history,setHistory]=useState(null),[busy,setBusy]=useState(true),[error,setError]=useState(''),[downloading,setDownloading]=useState('')
- async function load(nextPage=page,values=applied){setBusy(true);setError('');try{const data=await request(BASE+'/runs',{params:{...values,date_from:dateBoundary(values.date_from),date_to:dateBoundary(values.date_to,true),page:nextPage,page_size:20}});setHistory(data);setPage(nextPage);setApplied(values)}catch(e){setError(safeError(e))}finally{setBusy(false)}}
+ const filterRequest=useRef(0)
+ async function load(nextPage=page,values=applied){const requestId=++filterRequest.current;setBusy(true);setError('');try{const data=await request(BASE+'/runs',{params:{...values,q:values.q.trim(),date_from:dateBoundary(values.date_from),date_to:dateBoundary(values.date_to,true),page:nextPage,page_size:20}});if(requestId!==filterRequest.current)return;setHistory(data);setPage(nextPage);setApplied(values)}catch(e){if(requestId===filterRequest.current)setError(safeError(e))}finally{if(requestId===filterRequest.current)setBusy(false)}}
  useEffect(()=>{load(1,EMPTY)},[])
  function update(key,value){setFilters(current=>({...current,[key]:value}))}
  async function download(item){setDownloading(item.run_id);setError('');try{await downloadCalculation(item.run_id,item.input_name)}catch(e){setError(safeError(e))}finally{setDownloading('')}}

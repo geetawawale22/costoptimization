@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+import ModalCloseButton from '../components/ModalCloseButton'
 import React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import * as miscApi from '../services/api'
@@ -23,7 +25,7 @@ function InviteModal({ roles, onClose, onSave, saving }) {
       <div className="config-modal permission-definition-modal" role="dialog" aria-modal="true" aria-label="Invite User">
         <header className="config-modal-head">
           <div><h2>Invite User</h2><p>Creates an account shared with the existing application. No invitation email is sent.</p></div>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">×</button>
+          <ModalCloseButton onClick={onClose} aria-label="Close" />
         </header>
         <div className="config-modal-body">
           <div className="config-grid">
@@ -69,7 +71,7 @@ function EditUserModal({ user, roles, onClose, onSave, saving }) {
       <div className="config-modal permission-definition-modal" role="dialog" aria-modal="true" aria-label="Edit User">
         <header className="config-modal-head">
           <div><h2>Edit User — {user.name}</h2></div>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">×</button>
+          <ModalCloseButton onClick={onClose} aria-label="Close" />
         </header>
         <div className="config-modal-body">
           <div className="config-grid">
@@ -116,11 +118,13 @@ export default function Users() {
   const [editingUser, setEditingUser] = useState(null)
   const [saving, setSaving] = useState(false)
 
+  const searchRequest = useRef(0)
   async function refresh() {
+    const requestId = ++searchRequest.current
     setLoading(true)
     try {
       const [usersRes, rolesRes, fullRes] = await Promise.all([
-        miscApi.listUsers(page, 20, q, {
+        miscApi.listUsers(page, 20, q.trim(), {
           ...(kpiFilter === 'active' ? { status: 'Active' } : {}),
           ...(kpiFilter === 'inactive' ? { status: 'Inactive' } : {}),
           ...(kpiFilter === 'admins' ? { admins_only: true } : {}),
@@ -128,13 +132,14 @@ export default function Users() {
         miscApi.listRoles(1, 200),
         miscApi.userStatistics(),
       ])
+      if (requestId !== searchRequest.current) return
       setUsersMeta(usersRes)
       setRoles(rolesRes.items)
       setAllUsers(fullRes)
     } catch (err) {
-      showToast(err.message, 'error')
+      if (requestId === searchRequest.current) showToast(err.message, 'error')
     } finally {
-      setLoading(false)
+      if (requestId === searchRequest.current) setLoading(false)
     }
   }
 
@@ -231,7 +236,7 @@ export default function Users() {
       <div className="card user-card">
         <div className="toolbar user-toolbar">
           <div className="toolbar-left">
-            <input className="search-box" placeholder="Search name, email, or employee ID..." value={q} onChange={(e) => { setQ(e.target.value); setPage(1) }} />
+            <input className="search-box" aria-label="Search users" placeholder="Search name, email, or employee ID..." value={q} onChange={(e) => { setQ(e.target.value); setPage(1) }} /><button type="button" className="btn secondary" onClick={() => { setQ(''); setKpiFilter(''); setPage(1) }}>Reset filters</button>
           </div>
 
         </div>

@@ -1,3 +1,4 @@
+import ModalCloseButton from '../components/ModalCloseButton'
 import React, { useEffect, useRef, useState } from 'react'
 import { usePageCrumb } from '../layouts/ProtectedLayout'
 import Pagination from '../components/Pagination'
@@ -33,11 +34,13 @@ export default function FtgConverter() {
   const fileInput = useRef(null)
   const pageSize = 20
 
+  const historyRequest = useRef(0)
   async function refreshJobs() {
+    const requestId = ++historyRequest.current
     setHistoryLoading(true)
-    try { setHistory(await listFtgJobs({ page, page_size: pageSize, q: query })) }
-    catch (failure) { setError(failure.message || 'Unable to load converter history.') }
-    finally { setHistoryLoading(false) }
+    try { const result = await listFtgJobs({ page, page_size: pageSize, q: query.trim() }); if (requestId === historyRequest.current) setHistory(result) }
+    catch (failure) { if (requestId === historyRequest.current) setError(failure.message || 'Unable to load converter history.') }
+    finally { if (requestId === historyRequest.current) setHistoryLoading(false) }
   }
   useEffect(() => { ftgCapabilities().then(setCapabilities).catch(e => setError(e.message)) }, [])
   useEffect(() => { refreshJobs() }, [page, query])
@@ -117,7 +120,7 @@ export default function FtgConverter() {
         </form>
       </div>
       <section className="card ftg-history">
-        <div className="ftg-history-head"><h2>Converted Files</h2><label>Search files<input value={query} onChange={event => { setQuery(event.target.value); setPage(1) }} placeholder="Search input filename" /></label></div>
+        <div className="ftg-history-head"><h2>Converted Files</h2><label>Search files<input value={query} onChange={event => { setQuery(event.target.value); setPage(1) }} placeholder="Search input filename" /></label><button type="button" className="btn secondary" onClick={() => { setQuery(''); setPage(1) }}>Reset filters</button></div>
         {historyLoading ? <div className="loading-inline" role="status">Loading converted files...</div> : <div className="table-scroll"><table>
           <thead><tr><th>Input file</th><th>Version</th><th>Status</th><th>Created</th><th>Output</th><th>Actions</th></tr></thead>
           <tbody>{!history.items.length && <tr><td colSpan="6" className="ftg-empty">No converted files yet.</td></tr>}
@@ -129,7 +132,7 @@ export default function FtgConverter() {
     </section>}
     {error && <p className="pdf-converter-error" role="alert">{error}</p>}
     {previewJob && <section className="card ftg-preview" aria-label="Converted workbook preview">
-      <div className="ftg-history-head"><h2>Excel Preview</h2><button className="btn" onClick={() => { setPreviewJob(null); setPreview(null) }}>Close preview</button></div>
+      <div className="ftg-history-head"><h2>Excel Preview</h2><ModalCloseButton onClick={() => { setPreviewJob(null); setPreview(null) }} aria-label="Close preview" /></div>
       {previewBusy && <div className="loading-inline" role="status">Loading worksheet...</div>}
       {preview && <><label>Worksheet <select value={preview.sheet} onChange={event => openPreview(previewJob, event.target.value)}>{preview.sheets.map(sheet => <option key={sheet.name} value={sheet.name}>{sheet.name}</option>)}</select></label>
         <div className="table-scroll"><table><tbody>{preview.rows.map((row, index) => <tr key={index}>{row.map((value, column) => <td key={column}>{value === null || value === undefined ? '' : String(value)}</td>)}</tr>)}</tbody></table></div>

@@ -1,5 +1,6 @@
+import ModalCloseButton from '../components/ModalCloseButton'
 import React from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as miscApi from '../services/api'
 import Pagination from '../components/Pagination'
 import { usePageCrumb } from '../layouts/ProtectedLayout'
@@ -90,25 +91,28 @@ export default function AppConfig() {
     try { setOptions(await miscApi.appConfigOptions()) } catch (_) { /* keep defaults */ }
   }
 
+  const filterRequest = useRef(0)
   async function load(page = pagination.page, selectedFilters = filters) {
+    const requestId = ++filterRequest.current
     setLoading(true)
     setError('')
     try {
       const params = {
         page,
         pageSize: 20,
-        q: selectedFilters.q,
+        q: selectedFilters.q.trim(),
         group: selectedFilters.group,
         key: selectedFilters.key,
         active: selectedFilters.active,
         type: selectedFilters.type,
       }
       const data = await miscApi.listAppConfig(params)
+      if (requestId !== filterRequest.current) return
       setRows(data.items || [])
       setPagination({ page: data.page, page_size: data.page_size, total_pages: data.total_pages, total: data.total })
       await loadOptions()
-    } catch (err) { setError(err.message) }
-    finally { setLoading(false) }
+    } catch (err) { if (requestId === filterRequest.current) setError(err.message) }
+    finally { if (requestId === filterRequest.current) setLoading(false) }
   }
 
   useEffect(() => { load(1); loadOptions() }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -300,7 +304,7 @@ export default function AppConfig() {
                 <h3>{editing ? 'Edit Configuration' : 'Add Configuration'}</h3>
                 <p>{editing ? 'Update the selected configuration value and metadata.' : 'Create a new configuration key and define how it should be stored and used.'}</p>
               </div>
-              <button type="button" className="close-x" onClick={closeForm} aria-label="Close">×</button>
+              <ModalCloseButton onClick={closeForm} aria-label="Close" />
             </div>
 
             <div className="config-modal-body">

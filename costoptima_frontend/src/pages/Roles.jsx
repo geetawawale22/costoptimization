@@ -1,5 +1,6 @@
+import ModalCloseButton from '../components/ModalCloseButton'
 import React from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as miscApi from '../services/api'
 import Pagination from '../components/Pagination'
 import { usePageCrumb } from '../layouts/ProtectedLayout'
@@ -36,7 +37,7 @@ function Modal({ title, subtitle, children, footer, onClose, className = '' }) {
       <div className={`config-modal access-modal ${className}`} role="dialog" aria-modal="true" aria-label={title} onClick={(event) => event.stopPropagation()}>
         <header className="config-modal-head">
           <div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">×</button>
+          <ModalCloseButton onClick={onClose} aria-label="Close" />
         </header>
         <div className="config-modal-body access-modal-body">{children}</div>
         <footer className="config-modal-footer">{footer}</footer>
@@ -77,7 +78,7 @@ function RoleFormModal({ role, userCount, permissions, grantedIds, canDelete, on
     Object.values(groups).forEach((list) => list.sort((a, b) => ACTIONS.indexOf(a.action) - ACTIONS.indexOf(b.action)))
     return groups
   }, [permissions])
-  const moduleKeys = Object.keys(grouped).sort().filter((key) => !moduleQuery || key.replaceAll('_', ' ').toLowerCase().includes(moduleQuery.toLowerCase()))
+  const moduleKeys = Object.keys(grouped).sort().filter((key) => !moduleQuery || key.replaceAll('_', ' ').toLowerCase().includes(moduleQuery.trim().toLowerCase()))
 
   function toggle(permissionId) {
     setSelectedIds((current) => {
@@ -125,7 +126,7 @@ function RoleFormModal({ role, userCount, permissions, grantedIds, canDelete, on
           <div className="access-section-label">Permissions</div>
           <span className="role-form-permission-count">{selectedIds.size} of {permissions.length} granted</span>
         </div>
-        <input className="role-form-module-search" placeholder="Filter modules..." value={moduleQuery} onChange={(event) => setModuleQuery(event.target.value)} />
+        <input className="role-form-module-search" placeholder="Filter modules..." value={moduleQuery} onChange={(event) => setModuleQuery(event.target.value)} /><button type="button" className="btn secondary" onClick={() => setModuleQuery('')}>Reset filter</button>
         <div className="role-form-permission-grid">
           {moduleKeys.map((moduleKey) => {
             const modulePermissions = grouped[moduleKey]
@@ -207,7 +208,8 @@ export default function RolesPermissions() {
     setUserCountByRole(counts)
     setSyncedAt(new Date())
   }
-  async function refreshCatalogue(page = permPage) { setPermMeta(await miscApi.listPermissions(page, 20, catalogueFilters.resource, catalogueFilters.q, catalogueFilters.action)) }
+  const catalogueRequest = useRef(0)
+  async function refreshCatalogue(page = permPage) { const requestId = ++catalogueRequest.current; try { const result = await miscApi.listPermissions(page, 20, catalogueFilters.resource, catalogueFilters.q.trim(), catalogueFilters.action); if (requestId === catalogueRequest.current) setPermMeta(result) } catch (error) { if (requestId === catalogueRequest.current) showToast(error.message, 'error') } }
   async function loadInitial() {
     setLoading(true)
     setLoadError('')
@@ -231,7 +233,7 @@ export default function RolesPermissions() {
         if (moduleFilter && permission.resource !== moduleFilter) return false
         if (query) {
           const text = `${permission.resource} ${permission.action} ${permission.description || ''}`.toLowerCase()
-          if (!text.includes(query.toLowerCase())) return false
+          if (!text.includes(query.trim().toLowerCase())) return false
         }
         if (showGranted || showNotGranted) {
           const grantedCount = visibleRoles.filter((role) => grantedByRole[role.id]?.has(permission.id)).length
@@ -375,7 +377,7 @@ export default function RolesPermissions() {
           <option value="">All Roles</option>
           {roles.map((role) => <option key={role.id} value={role.id}>{role.name}</option>)}
         </select>
-        <div className="perm-toolbar-actions">
+        <div className="perm-toolbar-actions"><button type="button" className="btn secondary" onClick={() => { setQuery(''); setModuleFilter(''); setRoleFilter(''); setShowGranted(false); setShowNotGranted(false) }}>Reset filters</button>
           <button type="button" className="btn" onClick={toggleExpandAll}>{allExpanded ? 'Collapse All' : 'Expand All'}</button>
           <button type="button" className="btn" onClick={exportCsv}>Export</button>
           <button type="button" className="btn" onClick={loadInitial}>Refresh</button>
@@ -485,19 +487,19 @@ export default function RolesPermissions() {
           subtitle="Manage the reusable resource and action permissions available to roles."
           onClose={() => setCatalogueOpen(false)}
           className="role-editor-modal"
-          footer={<button type="button" className="btn" onClick={() => setCatalogueOpen(false)}>Close</button>}
+          footer={<ModalCloseButton onClick={() => setCatalogueOpen(false)} aria-label="Close dialog" />}
         >
           <div className="compact-toolbar">
-            <input className="toolbar-input" placeholder="Search permissions..." value={catalogueFilters.q} onChange={(event) => setCatalogueFilters({ ...catalogueFilters, q: event.target.value })} />
-            <select className="toolbar-select" value={catalogueFilters.resource} onChange={(event) => setCatalogueFilters({ ...catalogueFilters, resource: event.target.value })}>
+            <input className="toolbar-input" placeholder="Search permissions..." value={catalogueFilters.q} onChange={(event) => { setCatalogueFilters({ ...catalogueFilters, q: event.target.value }); setPermPage(1) }} />
+            <select className="toolbar-select" value={catalogueFilters.resource} onChange={(event) => { setCatalogueFilters({ ...catalogueFilters, resource: event.target.value }); setPermPage(1) }}>
               <option value="">All resources</option>
               {moduleKeys.map((resource) => <option key={resource}>{resource}</option>)}
             </select>
-            <select className="toolbar-select" value={catalogueFilters.action} onChange={(event) => setCatalogueFilters({ ...catalogueFilters, action: event.target.value })}>
+            <select className="toolbar-select" value={catalogueFilters.action} onChange={(event) => { setCatalogueFilters({ ...catalogueFilters, action: event.target.value }); setPermPage(1) }}>
               <option value="">All actions</option>
               {ACTIONS.map((action) => <option key={action}>{action}</option>)}
             </select>
-            <button className="btn primary" disabled={!canCreatePerms} title={canCreatePerms ? '' : "You don't have permission to create permissions."} onClick={() => setPermissionModal({ id: null, permission: EMPTY_PERMISSION })}>+ Add Permission</button>
+            <button type="button" className="btn secondary" onClick={() => { setCatalogueFilters({ q: '', resource: '', action: '' }); setPermPage(1) }}>Reset filters</button><button className="btn primary" disabled={!canCreatePerms} title={canCreatePerms ? '' : "You don't have permission to create permissions."} onClick={() => setPermissionModal({ id: null, permission: EMPTY_PERMISSION })}>+ Add Permission</button>
           </div>
           <div className="table-scroll">
             <table className="settings-table">

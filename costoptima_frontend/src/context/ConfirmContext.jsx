@@ -1,3 +1,4 @@
+import ModalCloseButton from '../components/ModalCloseButton'
 import React from 'react'
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
@@ -40,7 +41,7 @@ export function ConfirmProvider({ children }) {
           <div className="config-modal confirm-modal" role="alertdialog" aria-modal="true" aria-label={state.title}>
             <header className="config-modal-head">
               <div><h2>{state.title}</h2></div>
-              <button type="button" className="modal-close" onClick={() => close(false)} aria-label="Close">×</button>
+              <ModalCloseButton onClick={() => close(false)} aria-label="Close" />
             </header>
             <div className="config-modal-body"><p className="confirm-message">{state.message}</p></div>
             <footer className="config-modal-footer">
